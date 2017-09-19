@@ -14,6 +14,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Dylan on 19/09/2017.
@@ -33,7 +35,29 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
         String pOLN = params[1][1];
         String pTFN = params[2][0];
         String pTLN = params[2][1];
-        String login_url = "http://103.73.65.142/login.php";
+        List<String> dbConn = new ArrayList<>();
+        String login_url = null;
+        String ip = null;
+        String uName = null;
+        String pass = null;
+        String dbName = null;
+        try {
+            InputStream is = context.getAssets().open("fidget.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                dbConn.add(line);
+            }
+            login_url = dbConn.get(0);
+            ip = dbConn.get(1);
+            uName = dbConn.get(2);
+            pass = dbConn.get(3);
+            dbName = dbConn.get(4);
+            reader.close();
+            is.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if(type.equals("login")) {
             try {
                 URL url = new URL(login_url);
@@ -47,7 +71,11 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
                         URLEncoder.encode(pOFN,"UTF-8")+"&"+URLEncoder.encode("pOLN","UTF-8")+"="+
                         URLEncoder.encode(pOLN,"UTF-8")+"&"+URLEncoder.encode("pTFN","UTF-8")+"="+
                         URLEncoder.encode(pTFN,"UTF-8")+"&"+URLEncoder.encode("pTLN","UTF-8")+"="+
-                        URLEncoder.encode(pTLN,"UTF-8");
+                        URLEncoder.encode(pTLN,"UTF-8")+"&"+URLEncoder.encode("ip","UTF-8")+"="+
+                        URLEncoder.encode(ip,"UTF-8")+"&"+URLEncoder.encode("uName","UTF-8")+"="+
+                        URLEncoder.encode(uName,"UTF-8")+"&"+URLEncoder.encode("pass","UTF-8")+"="+
+                        URLEncoder.encode(pass,"UTF-8")+"&"+URLEncoder.encode("dbName","UTF-8")+"="+
+                        URLEncoder.encode(dbName,"UTF-8");
                 buff.write(post_data);
                 buff.flush();
                 buff.close();
@@ -65,7 +93,7 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
                 hUC.disconnect();
                 return result;
             } catch (Exception e) {
-                Toast.makeText(context, "Error connecting to the server\n" + e,
+                Toast.makeText(context, "Error connecting to the server!" + e,
                         Toast.LENGTH_LONG).show();
             }
         }
@@ -80,8 +108,13 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        alert.setMessage(result);
-        alert.show();
+        if(result.contains("Login success")) {
+            alert.setMessage(result);
+            alert.show();
+        } else {
+            Toast.makeText(context, "Error connecting to the server!",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override

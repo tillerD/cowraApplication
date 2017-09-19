@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 patrolers.add(1, ob1.getText());
             }
-            boolean validate = checkLogin(driver, observer);
+            checkLogin(driver, observer);
         } else {
             if(driver.length() <= 0) {
                 Toast.makeText(MainActivity.this, "Driver Name is required!",
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    public boolean checkLogin(EditText name1, EditText name2)
+    public void checkLogin(EditText name1, EditText name2)
     {
         String login = "login:login";
         String[] firstName = new String[0];
@@ -144,13 +144,16 @@ public class MainActivity extends AppCompatActivity {
             secondName = name2.getText().toString().split(" ");
         } catch(Exception e) {
             Toast.makeText(MainActivity.this,
-                    "Name fields must incldue a first and last name!\n" + e,
+                    "Name fields must incldue a first and last name!" + e,
                     Toast.LENGTH_LONG).show();
         }
-
-
-        BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-        backgroundWorker.execute(type, firstName, secondName);
-        return false;
+        try {
+            BackgroundWorker backgroundWorker = new BackgroundWorker(this);
+            backgroundWorker.execute(type, firstName, secondName);
+        } catch(Exception e) {
+            Toast.makeText(MainActivity.this,
+                    "Error connecting to the database!" + e,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 }
