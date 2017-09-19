@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">cowraApplication</string>
+    <string name="loginDetails">Phone Number: 027 863 0372\n\nCar Make: Toyota Rav4
+        \nCar Regno: DDC723\nCar Colour: White</string>
 </resources>

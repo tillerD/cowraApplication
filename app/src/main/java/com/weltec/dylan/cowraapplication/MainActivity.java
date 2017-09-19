@@ -1,34 +1,39 @@
 package com.weltec.dylan.cowraapplication;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
-import android.support.v4.app.Fragment;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutCompat;
-import android.text.Editable;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import static android.R.attr.button;
 
 public class MainActivity extends AppCompatActivity {
-    List patrolers = new ArrayList();
+    List patrolers;
+    EditText driver;
+    EditText driverId;
+    EditText observer;
+    EditText ob1;
+    EditText policeNum;
+    EditText kms;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+        //get text fields
+        patrolers = new ArrayList();
+        driver = (EditText) findViewById(R.id.driverNameField);
+        driverId = (EditText) findViewById(R.id.driverIDField);
+        observer = (EditText) findViewById(R.id.ob1NameField);
+        ob1 = (EditText) findViewById(R.id.ob1IDField);
+        policeNum = (EditText) findViewById(R.id.policeJobNumID);
+        kms = (EditText) findViewById(R.id.vecStartField);
         //AddUser button listener
         Button addUser = (Button) findViewById(R.id.addUser);
         addUser.setOnClickListener(new OnClickListener() {
@@ -74,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(name.length() <= 0) {
-                    Toast.makeText(MainActivity.this, "Name must be entered!",
+                    Toast.makeText(MainActivity.this, "Observer Name required!",
                             Toast.LENGTH_SHORT).show();
                 } else {
                     List info = new ArrayList();
@@ -90,12 +95,6 @@ public class MainActivity extends AppCompatActivity {
     }
     //startPatrol button
     public void startBtn(View v){
-        EditText driver = (EditText) findViewById(R.id.driverNameField);
-        EditText driverId = (EditText) findViewById(R.id.driverIDField);
-        EditText observer = (EditText) findViewById(R.id.ob1NameField);
-        EditText ob1 = (EditText) findViewById(R.id.ob1IDField);
-        EditText policeNum = (EditText) findViewById(R.id.policeJobNumID);
-        EditText kms = (EditText) findViewById(R.id.vecStartField);
         if((driver.length() > 0) && (observer.length() > 0)
                 && (policeNum.length() > 0) && (kms.length() > 0)) {
             if(driverId.length() > 0) {
@@ -114,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 patrolers.add(1, ob1.getText());
             }
+            boolean validate = checkLogin(driver, observer);
         } else {
             if(driver.length() <= 0) {
                 Toast.makeText(MainActivity.this, "Driver Name is required!",
@@ -131,5 +131,26 @@ public class MainActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
             }
         }
+    }
+    public boolean checkLogin(EditText name1, EditText name2)
+    {
+        String login = "login:login";
+        String[] firstName = new String[0];
+        String[] secondName = new String[0];
+        String type[] = new String[0];
+        type = login.split(":");
+        try {
+            firstName = name1.getText().toString().split(" ");
+            secondName = name2.getText().toString().split(" ");
+        } catch(Exception e) {
+            Toast.makeText(MainActivity.this,
+                    "Name fields must incldue a first and last name!\n" + e,
+                    Toast.LENGTH_LONG).show();
+        }
+
+
+        BackgroundWorker backgroundWorker = new BackgroundWorker(this);
+        backgroundWorker.execute(type, firstName, secondName);
+        return false;
     }
 }
