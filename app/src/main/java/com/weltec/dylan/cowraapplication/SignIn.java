@@ -14,6 +14,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.weltec.dylan.cowraapplication.R.id.policeJobNumID;
+
 public class SignIn extends AppCompatActivity {
     List patrolers;
     EditText driver;
@@ -32,7 +34,7 @@ public class SignIn extends AppCompatActivity {
         driverId = (EditText) findViewById(R.id.driverIDField);
         observer = (EditText) findViewById(R.id.ob1NameField);
         ob1 = (EditText) findViewById(R.id.ob1IDField);
-        policeNum = (EditText) findViewById(R.id.policeJobNumID);
+        policeNum = (EditText) findViewById(policeJobNumID);
         kms = (EditText) findViewById(R.id.vecStartField);
         //AddUser button listener
         Button addUser = (Button) findViewById(R.id.addUser);
@@ -139,22 +141,37 @@ public class SignIn extends AppCompatActivity {
         String[] firstName = new String[0];
         String[] secondName = new String[0];
         String type[] = new String[0];
-        
-        if(name1.getText().toString().contains(" ") && name2.getText().toString().contains(" ")) {
-            type = login.split(" ");
-            firstName = name1.getText().toString().split(" ");
-                secondName = name2.getText().toString().split(" ");
-            try {
-                BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-                backgroundWorker.execute(type, firstName, secondName);
+        double value = 0;
+        if(policeNum.getText().toString().contains("P0")) {
+            try{
+                value = Double.parseDouble(kms.getText().toString());
             } catch (Exception e) {
                 Toast.makeText(SignIn.this,
-                        "Error connecting to the database!" + e,
+                        "Starting kms is not a number! " + e,
+                        Toast.LENGTH_LONG).show();
+            }
+            if (name1.getText().toString().contains(" ")
+                    && name2.getText().toString().contains(" ")
+                    && value > 0) {
+                type = login.split(" ");
+                firstName = name1.getText().toString().split(" ");
+                secondName = name2.getText().toString().split(" ");
+                try {
+                    BackgroundWorker backgroundWorker = new BackgroundWorker(this);
+                    backgroundWorker.execute(type, firstName, secondName);
+                } catch (Exception e) {
+                    Toast.makeText(SignIn.this,
+                            "Error connecting to the database!" + e,
+                            Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(SignIn.this,
+                        "Name fields must incldue a first and last name!",
                         Toast.LENGTH_LONG).show();
             }
         } else {
             Toast.makeText(SignIn.this,
-                    "Name fields must incldue a first and last name!",
+                    "Police job number is incorrect!",
                     Toast.LENGTH_LONG).show();
         }
     }
