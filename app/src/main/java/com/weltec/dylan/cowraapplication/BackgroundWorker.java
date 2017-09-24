@@ -1,18 +1,17 @@
 package com.weltec.dylan.cowraapplication;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,23 +23,29 @@ import java.util.List;
 public class BackgroundWorker extends AsyncTask<String[], Void, String> {
     Context context;
     AlertDialog alert;
+    String type;
+    String pOFN;
+    String pOLN;
+    String pTFN;
+    String pTLN;
+    List<String> dbConn;
+    String login_url = null;
+    String ip = null;
+    String uName = null;
+    String pass = null;
+    String dbName = null;
     public  BackgroundWorker(Context c) {
         this.context = c;
     }
 
     @Override
     protected String doInBackground(String[]... params) {
-        String type = params[0][0];
-        String pOFN = params[1][0];
-        String pOLN = params[1][1];
-        String pTFN = params[2][0];
-        String pTLN = params[2][1];
-        List<String> dbConn = new ArrayList<>();
-        String login_url = null;
-        String ip = null;
-        String uName = null;
-        String pass = null;
-        String dbName = null;
+        type = params[0][0];
+        pOFN = params[1][0];
+        pOLN = params[1][1];
+        pTFN = params[2][0];
+        pTLN = params[2][1];
+        dbConn = new ArrayList<>();
         try {
             InputStream is = context.getAssets().open("fidget.txt");
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -56,46 +61,42 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
             reader.close();
             is.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            return "Error getting server details! " + e;
         }
-        if(type.equals("login")) {
-            try {
+
+        try {
+            if(type.equals("login")) {
+                String data = URLEncoder.encode("ip", "UTF-8")+"="+URLEncoder.encode(ip, "UTF-8");
+                data+="&"+URLEncoder.encode("uName", "UTF-8")+"="+URLEncoder.encode(uName, "UTF-8");
+                data+="&"+URLEncoder.encode("pass", "UTF-8")+"="+URLEncoder.encode(pass, "UTF-8");
+                data+="&"+URLEncoder.encode("dbName", "UTF-8")+"="+URLEncoder.encode(dbName, "UTF-8");
+                data+="&"+URLEncoder.encode("pOFN", "UTF-8")+"="+URLEncoder.encode(pOFN, "UTF-8");
+                data+="&"+URLEncoder.encode("pOLN", "UTF-8")+"="+URLEncoder.encode(pOLN, "UTF-8");
+                data+="&"+URLEncoder.encode("pTFN", "UTF-8")+"="+URLEncoder.encode(pTFN, "UTF-8");
+                data+="&"+URLEncoder.encode("pTLN", "UTF-8")+"="+URLEncoder.encode(pTLN, "UTF-8");
+
                 URL url = new URL(login_url);
-                HttpURLConnection hUC = (HttpURLConnection) url.openConnection();
-                hUC.setRequestMethod("POST");
-                hUC.setDoOutput(true);
-                hUC.setDoInput(true);
-                OutputStream output = hUC.getOutputStream();
-                BufferedWriter buff = new BufferedWriter(new OutputStreamWriter(output, "UTF-8"));
-                String post_data = URLEncoder.encode("pOFN","UTF-8")+"="+
-                        URLEncoder.encode(pOFN,"UTF-8")+"&"+URLEncoder.encode("pOLN","UTF-8")+"="+
-                        URLEncoder.encode(pOLN,"UTF-8")+"&"+URLEncoder.encode("pTFN","UTF-8")+"="+
-                        URLEncoder.encode(pTFN,"UTF-8")+"&"+URLEncoder.encode("pTLN","UTF-8")+"="+
-                        URLEncoder.encode(pTLN,"UTF-8")+"&"+URLEncoder.encode("ip","UTF-8")+"="+
-                        URLEncoder.encode(ip,"UTF-8")+"&"+URLEncoder.encode("uName","UTF-8")+"="+
-                        URLEncoder.encode(uName,"UTF-8")+"&"+URLEncoder.encode("pass","UTF-8")+"="+
-                        URLEncoder.encode(pass,"UTF-8")+"&"+URLEncoder.encode("dbName","UTF-8")+"="+
-                        URLEncoder.encode(dbName,"UTF-8");
-                buff.write(post_data);
-                buff.flush();
-                buff.close();
-                output.close();
-                InputStream input = hUC.getInputStream();
-                BufferedReader read = new BufferedReader(new InputStreamReader(input,
-                        "iso-8859-1"));
-                String result="";
-                String line;
-                while((line = read.readLine()) != null) {
-                    result += line;
+                URLConnection conn = url.openConnection();
+
+                conn.setDoOutput(true);
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+
+                wr.write(data);
+                wr.flush();
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = null;
+
+                while((line = reader.readLine()) != null) {
+                    sb.append(line);
+                    break;
                 }
-                read.close();
-                input.close();
-                hUC.disconnect();
-                return result;
-            } catch (Exception e) {
-                Toast.makeText(context, "Error connecting to the server!" + e,
-                        Toast.LENGTH_LONG).show();
+
+                return  sb.toString();
             }
+        } catch (Exception e) {
+            return "Error connecting to the server! " + e;
         }
         return null;
     }
@@ -104,16 +105,21 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
     protected void onPreExecute() {
         alert = new AlertDialog.Builder(context).create();
         alert.setTitle("Login Status");
+        alert.setButton(Dialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
     }
 
     @Override
     protected void onPostExecute(String result) {
+        alert.setMessage(result);
+        alert.show();
         if(result.contains("Login success")) {
-            alert.setMessage(result);
-            alert.show();
+
         } else {
-            Toast.makeText(context, "Error connecting to the server!",
-                    Toast.LENGTH_LONG).show();
+
         }
     }
 

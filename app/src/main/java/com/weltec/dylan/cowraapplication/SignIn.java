@@ -14,7 +14,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class SignIn extends AppCompatActivity {
     List patrolers;
     EditText driver;
     EditText driverId;
@@ -53,14 +53,14 @@ public class MainActivity extends AppCompatActivity {
     }
     //Patroler popup window
     public void patrolerPopUp(View v) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog.Builder alert = new AlertDialog.Builder(SignIn.this);
         //Create edit fields for the pop up window
-        LinearLayout layout = new LinearLayout(MainActivity.this);
+        LinearLayout layout = new LinearLayout(SignIn.this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        final EditText name = new EditText(MainActivity.this);
+        final EditText name = new EditText(SignIn.this);
         name.setHint("Observer Name:");
         layout.addView(name);
-        final EditText patId = new EditText(MainActivity.this);
+        final EditText patId = new EditText(SignIn.this);
         patId.setHint("Observer ID:");
         layout.addView(patId);
         //Set the layout of the popup window
@@ -79,14 +79,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(name.length() <= 0) {
-                    Toast.makeText(MainActivity.this, "Observer Name required!",
+                    Toast.makeText(SignIn.this, "Observer Name required!",
                             Toast.LENGTH_SHORT).show();
                 } else {
                     List info = new ArrayList();
                     info.add(name.getText());
                     info.add(patId.getText());
                     patrolers.add(info);
-                    Toast.makeText(MainActivity.this, "Patroler added!",
+                    Toast.makeText(SignIn.this, "Patroler added!",
                             Toast.LENGTH_SHORT).show();
                     alertDialog.dismiss();
                 }
@@ -116,43 +116,45 @@ public class MainActivity extends AppCompatActivity {
             checkLogin(driver, observer);
         } else {
             if(driver.length() <= 0) {
-                Toast.makeText(MainActivity.this, "Driver Name is required!",
+                Toast.makeText(SignIn.this, "Driver Name is required!",
                         Toast.LENGTH_LONG).show();
                 driverId.setText("");
             } else if(observer.length() <= 0) {
-                Toast.makeText(MainActivity.this, "Observer 1 Name is required!",
+                Toast.makeText(SignIn.this, "Observer 1 Name is required!",
                         Toast.LENGTH_LONG).show();
                 ob1.setText("");
             } else if(policeNum.length() <= 0) {
-                Toast.makeText(MainActivity.this, "Police Job Number is required!",
+                Toast.makeText(SignIn.this, "Police Job Number is required!",
                         Toast.LENGTH_LONG).show();
             } else if(kms.length() <= 0) {
-                Toast.makeText(MainActivity.this, "Start Kms is required!",
+                Toast.makeText(SignIn.this, "Start Kms is required!",
                         Toast.LENGTH_LONG).show();
             }
         }
     }
+    //call database checker class
     public void checkLogin(EditText name1, EditText name2)
     {
-        String login = "login:login";
+        String login = "login login";
         String[] firstName = new String[0];
         String[] secondName = new String[0];
         String type[] = new String[0];
-        type = login.split(":");
-        try {
+        
+        if(name1.getText().toString().contains(" ") && name2.getText().toString().contains(" ")) {
+            type = login.split(" ");
             firstName = name1.getText().toString().split(" ");
-            secondName = name2.getText().toString().split(" ");
-        } catch(Exception e) {
-            Toast.makeText(MainActivity.this,
-                    "Name fields must incldue a first and last name!" + e,
-                    Toast.LENGTH_LONG).show();
-        }
-        try {
-            BackgroundWorker backgroundWorker = new BackgroundWorker(this);
-            backgroundWorker.execute(type, firstName, secondName);
-        } catch(Exception e) {
-            Toast.makeText(MainActivity.this,
-                    "Error connecting to the database!" + e,
+                secondName = name2.getText().toString().split(" ");
+            try {
+                BackgroundWorker backgroundWorker = new BackgroundWorker(this);
+                backgroundWorker.execute(type, firstName, secondName);
+            } catch (Exception e) {
+                Toast.makeText(SignIn.this,
+                        "Error connecting to the database!" + e,
+                        Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(SignIn.this,
+                    "Name fields must incldue a first and last name!",
                     Toast.LENGTH_LONG).show();
         }
     }
