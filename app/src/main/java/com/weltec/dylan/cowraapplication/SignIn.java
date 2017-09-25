@@ -2,6 +2,7 @@ package com.weltec.dylan.cowraapplication;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -11,7 +12,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static com.weltec.dylan.cowraapplication.R.id.policeJobNumID;
@@ -19,11 +25,12 @@ import static com.weltec.dylan.cowraapplication.R.id.policeJobNumID;
 public class SignIn extends AppCompatActivity {
     List patrolers;
     EditText driver;
-    EditText driverId;
     EditText observer;
-    EditText ob1;
+    EditText observer2;
     EditText policeNum;
     EditText kms;
+    String result;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,9 +38,8 @@ public class SignIn extends AppCompatActivity {
         //get text fields
         patrolers = new ArrayList();
         driver = (EditText) findViewById(R.id.driverNameField);
-        driverId = (EditText) findViewById(R.id.driverIDField);
         observer = (EditText) findViewById(R.id.ob1NameField);
-        ob1 = (EditText) findViewById(R.id.ob1IDField);
+        observer2 = (EditText) findViewById(R.id.ob2NameField);
         policeNum = (EditText) findViewById(policeJobNumID);
         kms = (EditText) findViewById(R.id.vecStartField);
         //AddUser button listener
@@ -62,9 +68,6 @@ public class SignIn extends AppCompatActivity {
         final EditText name = new EditText(SignIn.this);
         name.setHint("Observer Name:");
         layout.addView(name);
-        final EditText patId = new EditText(SignIn.this);
-        patId.setHint("Observer ID:");
-        layout.addView(patId);
         //Set the layout of the popup window
         alert.setTitle("Add Patroler")
                 .setCancelable(false)
@@ -84,10 +87,7 @@ public class SignIn extends AppCompatActivity {
                     Toast.makeText(SignIn.this, "Observer Name required!",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    List info = new ArrayList();
-                    info.add(name.getText());
-                    info.add(patId.getText());
-                    patrolers.add(info);
+                    patrolers.add(name.getText());
                     Toast.makeText(SignIn.this, "Patroler added!",
                             Toast.LENGTH_SHORT).show();
                     alertDialog.dismiss();
@@ -99,36 +99,22 @@ public class SignIn extends AppCompatActivity {
     public void startBtn(View v){
         if((driver.length() > 0) && (observer.length() > 0)
                 && (policeNum.length() > 0) && (kms.length() > 0)) {
-            if(driverId.length() > 0) {
-                List driverInfo = new ArrayList();
-                driverInfo.add(driver.getText());
-                driverInfo.add(driverId.getText());
-                patrolers.add(0, driverInfo);
-            } else {
-                patrolers.add(0, driver.getText());
-            }
-            if(ob1.length() > 0) {
-                List ob1Info = new ArrayList();
-                ob1Info.add(observer.getText());
-                ob1Info.add(ob1.getText());
-                patrolers.add(1, ob1Info);
-            } else {
-                patrolers.add(1, ob1.getText());
-            }
             checkLogin(driver, observer);
+            if (onComplete()) {
+                saveToArray();
+                saveToFile();
+            }
         } else {
-            if(driver.length() <= 0) {
+            if (driver.length() <= 0) {
                 Toast.makeText(SignIn.this, "Driver Name is required!",
                         Toast.LENGTH_LONG).show();
-                driverId.setText("");
-            } else if(observer.length() <= 0) {
+            } else if (observer.length() <= 0) {
                 Toast.makeText(SignIn.this, "Observer 1 Name is required!",
                         Toast.LENGTH_LONG).show();
-                ob1.setText("");
-            } else if(policeNum.length() <= 0) {
+            } else if (policeNum.length() <= 0) {
                 Toast.makeText(SignIn.this, "Police Job Number is required!",
                         Toast.LENGTH_LONG).show();
-            } else if(kms.length() <= 0) {
+            } else if (kms.length() <= 0) {
                 Toast.makeText(SignIn.this, "Start Kms is required!",
                         Toast.LENGTH_LONG).show();
             }
@@ -159,9 +145,10 @@ public class SignIn extends AppCompatActivity {
                 try {
                     BackgroundWorker backgroundWorker = new BackgroundWorker(this);
                     backgroundWorker.execute(type, firstName, secondName);
+                    result = backgroundWorker.get();
                 } catch (Exception e) {
                     Toast.makeText(SignIn.this,
-                            "Error connecting to the database!" + e,
+                            "Error connecting to the database! " + e,
                             Toast.LENGTH_LONG).show();
                 }
             } else {
@@ -173,6 +160,49 @@ public class SignIn extends AppCompatActivity {
             Toast.makeText(SignIn.this,
                     "Police job number is incorrect!",
                     Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public boolean onComplete() {
+        if(result.contains("Login failed")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean saveToFile() {
+        File myFile;
+        Date currentTime = Calendar.getInstance().getTime();
+        File directory = this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        String fileName = currentTime.toString() + ".csv";
+        try {
+            myFile = new File(directory, fileName);
+            myFile.createNewFile();
+            FileOutputStream fOut = new FileOutputStream(myFile);
+            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+            myOutWriter.append("This is a test!");
+            myOutWriter.append("\n");
+            for (Object temp : patrolers) {
+
+            }
+            myOutWriter.append("This is a test!");
+            myOutWriter.append("\n");
+            myOutWriter.close();
+            return true;
+        } catch (Exception e) {
+            Toast.makeText(SignIn.this,
+                    "Error: Could not save to file! " + e,
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+    }
+
+    public void saveToArray() {
+        patrolers.add(0, driver.getText());
+        patrolers.add(1, observer.getText());
+        if(observer2.getText().length() > 0) {
+            patrolers.add(2, observer2.getText());
         }
     }
 }

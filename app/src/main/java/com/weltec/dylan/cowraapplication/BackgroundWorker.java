@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 
 import java.io.BufferedReader;
@@ -15,6 +16,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Created by Dylan on 19/09/2017.
@@ -34,6 +36,7 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
     String uName = null;
     String pass = null;
     String dbName = null;
+
     public  BackgroundWorker(Context c) {
         this.context = c;
     }
@@ -63,7 +66,6 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
         } catch (Exception e) {
             return "Error getting server details! " + e;
         }
-
         try {
             if(type.equals("login")) {
                 String data = URLEncoder.encode("ip", "UTF-8")+"="+URLEncoder.encode(ip, "UTF-8");
@@ -114,17 +116,33 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        alert.setMessage(result);
-        alert.show();
-        if(result.contains("Login success")) {
-
+        if(result.contains("Login failed")){
+            alert.setMessage(result);
+            alert.show();
+        } else if (isExternalStorageWritable()) {
+            try {
+                alert.setMessage(result);
+                alert.show();
+            } catch (Exception e) {
+                alert.setMessage("Error creating file! " + e);
+                alert.show();
+            }
         } else {
-
+            alert.setMessage("Unable to locate external storage!");
+            alert.show();
         }
     }
 
     @Override
     protected void onProgressUpdate(Void... values) {
         super.onProgressUpdate(values);
+    }
+
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
     }
 }
