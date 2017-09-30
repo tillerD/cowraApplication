@@ -25,6 +25,10 @@
             android:name=".Home"
             android:screenOrientation="landscape">
         </activity>
+        <activity
+            android:name=".NewEvent"
+            android:screenOrientation="landscape">
+        </activity>
     </application>
 
 </manifest>

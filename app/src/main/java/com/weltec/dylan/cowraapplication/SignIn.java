@@ -91,7 +91,6 @@ public class SignIn extends AppCompatActivity {
         //Location
         manage = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         listener = new LocationListener() {
-
             @Override
             public void onLocationChanged(Location location) {
             }
@@ -156,12 +155,12 @@ public class SignIn extends AppCompatActivity {
     }
 
     //start button popup
-    private void startPopUp(final View v) {
+    private void startPopUp(View v) {
         AlertDialog.Builder alert = new AlertDialog.Builder(SignIn.this);
         LinearLayout layout = new LinearLayout(SignIn.this);
         layout.setOrientation(LinearLayout.VERTICAL);
         final TextView name = new TextView(SignIn.this);
-        name.setText("Login Success!");
+        name.setText("\tLogin Success!");
         layout.addView(name);
         alert.setTitle("Login Details:")
                 .setCancelable(false)

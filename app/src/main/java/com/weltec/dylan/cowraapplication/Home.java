@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class Home extends Activity{
     private RadioGroup eventIds;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.end_patrol);
         policeNum = getIntent().getStringExtra("POLICE");
@@ -70,6 +71,13 @@ public class Home extends Activity{
             @Override
             public void onClick(View v) {
                 logOutPopUp(v);
+            }
+        });
+        Button createEvent = (Button) findViewById(R.id.newEventBtn);
+        createEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newEvent(v);
             }
         });
     }
@@ -160,5 +168,17 @@ public class Home extends Activity{
             rb[i].setId(i);
             group.addView(rb[i]);
         }
+    }
+
+    private void newEvent(View v) {
+        Intent intent = new Intent(Home.this, NewEvent.class);
+        intent.putExtra("IDS", (Serializable) events);
+        intent.putExtra("LIST", (Serializable) patrolers);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // do nothing.
     }
 }

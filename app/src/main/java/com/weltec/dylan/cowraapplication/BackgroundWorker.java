@@ -117,12 +117,12 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
     @Override
     protected void onPostExecute(String result) {
         if(result.contains("Login failed")){
-            alert.setMessage(result);
+            alert.setMessage("\t" + result);
             alert.show();
         } else if (isExternalStorageWritable()) {
 
         } else {
-            alert.setMessage("Unable to locate external storage!");
+            alert.setMessage("\tUnable to locate external storage!");
             alert.show();
         }
     }
