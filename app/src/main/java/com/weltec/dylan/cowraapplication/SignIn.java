@@ -3,6 +3,7 @@ package com.weltec.dylan.cowraapplication;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -18,11 +19,13 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -51,7 +54,7 @@ public class SignIn extends AppCompatActivity {
         askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION);
         askForPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION);
         //get text fields
-        patrolers = new ArrayList();
+        patrolers = new ArrayList<String>();
         driver = (EditText) findViewById(R.id.driverNameField);
         observer = (EditText) findViewById(R.id.ob1NameField);
         observer2 = (EditText) findViewById(R.id.ob2NameField);
@@ -62,7 +65,19 @@ public class SignIn extends AppCompatActivity {
         addUser.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                patrolerPopUp(v);
+                if(observer2.length() > 0) {
+                    if(patrolers.size() < 2) {
+                        patrolerPopUp(v);
+                    } else {
+                        Toast.makeText(SignIn.this,
+                                "Too many patrolers added: max is 5 per vehicle.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(SignIn.this, "Observer 2 field is empty!",
+                            Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
         //StartPatrol button listener
@@ -140,14 +155,38 @@ public class SignIn extends AppCompatActivity {
                 });
     }
 
+    //start button popup
+    public void startPopUp(final View v) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(SignIn.this);
+        LinearLayout layout = new LinearLayout(SignIn.this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        final TextView name = new TextView(SignIn.this);
+        name.setText("Login Success!");
+        layout.addView(name);
+        alert.setTitle("Login Details:")
+                .setCancelable(false)
+                .setView(layout)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        saveToArray();
+                        //saveToFile();
+                        Intent intent = new Intent(SignIn.this, Home.class);
+                        intent.putExtra("POLICE", policeNum.getText().toString());
+                        intent.putExtra("LIST", (Serializable) patrolers);
+                        startActivity(intent);
+                    }
+                });
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.show();
+    }
+
     //startPatrol button
     public void startBtn(View v) {
         if ((driver.length() > 0) && (observer.length() > 0)
                 && (policeNum.length() > 0) && (kms.length() > 0)) {
             if (checkLogin(driver, observer)) {
                 if (onComplete()) {
-                    saveToArray();
-                    saveToFile();
+                    startPopUp(v);
                 }
             }
         } else {

@@ -120,13 +120,7 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
             alert.setMessage(result);
             alert.show();
         } else if (isExternalStorageWritable()) {
-            try {
-                alert.setMessage(result);
-                alert.show();
-            } catch (Exception e) {
-                alert.setMessage("Error creating file! " + e);
-                alert.show();
-            }
+
         } else {
             alert.setMessage("Unable to locate external storage!");
             alert.show();
