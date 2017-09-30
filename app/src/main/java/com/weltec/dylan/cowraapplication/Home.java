@@ -2,12 +2,16 @@ package com.weltec.dylan.cowraapplication;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,12 +25,13 @@ import java.util.List;
 
 public class Home extends Activity{
 
-    String policeNum;
-    List patrolers;
-    List events;
-    TextView polNum;
-    TextView obList;
-    TextView driverName;
+    private String policeNum;
+    private List patrolers;
+    private List events;
+    private TextView polNum;
+    private TextView obList;
+    private TextView driverName;
+    private RadioGroup eventIds;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,6 +52,9 @@ public class Home extends Activity{
         }
         try {
             events = getIntent().getStringArrayListExtra("IDS");
+            eventIds = (RadioGroup) findViewById(R.id.eventIdList);
+            eventIds.setOrientation(RadioGroup.VERTICAL);
+            displayEvents(events, eventIds);
         } catch (Exception e) {
             events = new ArrayList();
         }
@@ -61,13 +69,13 @@ public class Home extends Activity{
         endPatrol.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+                logOutPopUp(v);
             }
         });
     }
 
     //Patroler popup window
-    public void swapDrivers(View v) {
+    private void swapDrivers(View v) {
         AlertDialog.Builder alert = new AlertDialog.Builder(Home.this);
         //Create edit fields for the pop up window
         LinearLayout layout = new LinearLayout(Home.this);
@@ -102,5 +110,55 @@ public class Home extends Activity{
                 });
         final AlertDialog alertDialog = alert.create();
         alertDialog.show();
+    }
+
+    //Patroler popup window
+    private void logOutPopUp(View v) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(Home.this);
+        //Create edit fields for the pop up window
+        LinearLayout layout = new LinearLayout(Home.this);
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+        final EditText kms = new EditText(Home.this);
+        kms.setHint("Finishing KMs:");
+        layout.addView(kms);
+        //Set the layout of the popup window
+        alert.setTitle("Log Out - End KMs")
+                .setCancelable(false)
+                .setView(layout)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Log Out", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (kms.length() <= 0) {
+                            Toast.makeText(Home.this, "Finishing KMs required!",
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(Home.this, "Uploading!",
+                                    Toast.LENGTH_SHORT).show();
+                            //TODO call the method that saves and uploade everything to the database!
+                            Intent intent = new Intent(Home.this, SignIn.class);
+                            startActivity(intent);
+                            alertDialog.dismiss();
+                        }
+                    }
+                });
+    }
+
+    private void displayEvents(List events, RadioGroup group) {
+        int num = events.size();
+        final RadioButton[] rb = new RadioButton[num];
+        for(int i=0; i<num; i++) {
+            rb[i] = new RadioButton(this);
+            rb[i].setText(events.get(i).toString());
+            rb[i].setId(i);
+            group.addView(rb[i]);
+        }
     }
 }

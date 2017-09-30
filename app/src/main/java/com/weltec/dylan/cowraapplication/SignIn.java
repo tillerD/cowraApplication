@@ -35,16 +35,16 @@ import static com.weltec.dylan.cowraapplication.R.id.policeJobNumID;
 
 public class SignIn extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
-    List patrolers;
-    EditText driver;
-    EditText observer;
-    EditText observer2;
-    EditText policeNum;
-    EditText kms;
-    String result;
-    final Integer LOCATION = 0x1;
-    LocationManager manage;
-    LocationListener listener;
+    private List patrolers;
+    private EditText driver;
+    private EditText observer;
+    private EditText observer2;
+    private EditText policeNum;
+    private EditText kms;
+    private String result;
+    private final Integer LOCATION = 0x1;
+    private LocationManager manage;
+    private LocationListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +119,7 @@ public class SignIn extends AppCompatActivity {
     }
 
     //Patroler popup window
-    public void patrolerPopUp(View v) {
+    private void patrolerPopUp(View v) {
         AlertDialog.Builder alert = new AlertDialog.Builder(SignIn.this);
         //Create edit fields for the pop up window
         LinearLayout layout = new LinearLayout(SignIn.this);
@@ -156,7 +156,7 @@ public class SignIn extends AppCompatActivity {
     }
 
     //start button popup
-    public void startPopUp(final View v) {
+    private void startPopUp(final View v) {
         AlertDialog.Builder alert = new AlertDialog.Builder(SignIn.this);
         LinearLayout layout = new LinearLayout(SignIn.this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -173,6 +173,7 @@ public class SignIn extends AppCompatActivity {
                         Intent intent = new Intent(SignIn.this, Home.class);
                         intent.putExtra("POLICE", policeNum.getText().toString());
                         intent.putExtra("LIST", (Serializable) patrolers);
+                        //intent.putExtra("IDS", createIds());
                         startActivity(intent);
                     }
                 });
@@ -207,7 +208,7 @@ public class SignIn extends AppCompatActivity {
     }
 
     //call database checker class
-    public boolean checkLogin(EditText name1, EditText name2) {
+    private boolean checkLogin(EditText name1, EditText name2) {
         String login = "login login";
         String[] firstName = new String[0];
         String[] secondName = new String[0];
@@ -253,7 +254,7 @@ public class SignIn extends AppCompatActivity {
         }
     }
 
-    public boolean onComplete() {
+    private boolean onComplete() {
         if (result.contains("Login failed")) {
             return false;
         } else {
@@ -261,7 +262,7 @@ public class SignIn extends AppCompatActivity {
         }
     }
 
-    public boolean saveToFile() {
+    private boolean saveToFile() {
         Date currentTime = Calendar.getInstance().getTime();
         String tableID = createID(currentTime);
         saveToEdit(tableID);
@@ -269,7 +270,7 @@ public class SignIn extends AppCompatActivity {
         return false;
     }
 
-    public void saveToEdit(String id) {
+    private void saveToEdit(String id) {
         File myFile;
         File directory = this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         String fileName = "Event.csv";
@@ -292,7 +293,7 @@ public class SignIn extends AppCompatActivity {
         }
     }
 
-    public void saveToTimeLoc(String id, Date time) {
+    private void saveToTimeLoc(String id, Date time) {
         File myFile;
         File directory = this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         String fileName = "TimeLoc.csv";
@@ -321,7 +322,7 @@ public class SignIn extends AppCompatActivity {
         }
     }
 
-    public void saveToArray() {
+    private void saveToArray() {
         patrolers.add(0, driver.getText());
         patrolers.add(1, observer.getText());
         if (observer2.getText().length() > 0) {
@@ -329,14 +330,14 @@ public class SignIn extends AppCompatActivity {
         }
     }
 
-    public String createID(Date time) {
+    private String createID(Date time) {
         String id = Integer.toString(time.getMonth()) + Integer.toString(time.getDay())
                 + Integer.toString(time.getYear()) + Integer.toString(time.getHours())
                 + Integer.toString(time.getMinutes()) + Integer.toString(time.getSeconds());
         return id;
     }
 
-    public void askForPermission(String permission, Integer requestCode) {
+    private void askForPermission(String permission, Integer requestCode) {
         if(ContextCompat.checkSelfPermission(this, permission) !=
                 PackageManager.PERMISSION_GRANTED) {
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
@@ -351,12 +352,20 @@ public class SignIn extends AppCompatActivity {
         }
     }
 
-    public ArrayList calLoc(Location location) {
+    private ArrayList calLoc(Location location) {
         ArrayList latLon = new ArrayList();
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
         latLon.add(longitude);
         latLon.add(latitude);
         return latLon;
+    }
+
+    private ArrayList createIds() {
+        ArrayList ids = new ArrayList();
+        for(int i = 1; i < 11; i++) {
+            ids.add(Integer.toString(i));
+        }
+        return  ids;
     }
 }

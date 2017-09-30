@@ -23,19 +23,19 @@ import java.util.List;
  */
 
 public class BackgroundWorker extends AsyncTask<String[], Void, String> {
-    Context context;
-    AlertDialog alert;
-    String type;
-    String pOFN;
-    String pOLN;
-    String pTFN;
-    String pTLN;
-    List<String> dbConn;
-    String login_url = null;
-    String ip = null;
-    String uName = null;
-    String pass = null;
-    String dbName = null;
+    private Context context;
+    private AlertDialog alert;
+    private String type;
+    private String pOFN;
+    private String pOLN;
+    private String pTFN;
+    private String pTLN;
+    private List<String> dbConn;
+    private String login_url = null;
+    private String ip = null;
+    private String uName = null;
+    private String pass = null;
+    private String dbName = null;
 
     public  BackgroundWorker(Context c) {
         this.context = c;
@@ -132,7 +132,7 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
         super.onProgressUpdate(values);
     }
 
-    public boolean isExternalStorageWritable() {
+    private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             return true;

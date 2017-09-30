@@ -127,16 +127,16 @@
         android:id="@+id/ob1NameField"
         android:layout_width="229dp"
         android:layout_height="48dp"
-        android:textSize="20dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text=""
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.078"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.078"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.486" />
+        app:layout_constraintVertical_bias="0.479" />
 
     <EditText
         android:id="@+id/ob2NameField"
@@ -155,7 +155,7 @@
 
     <EditText
         android:id="@+id/vecStartField"
-        android:layout_width="229dp"
+        android:layout_width="233dp"
         android:layout_height="48dp"
         android:ems="10"
         android:textSize="20dp"
@@ -163,10 +163,10 @@
         android:text=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499"
+        app:layout_constraintVertical_bias="0.479"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.474" />
+        app:layout_constraintHorizontal_bias="0.476" />
 
     <EditText
         android:id="@+id/policeJobNumID"
