@@ -38,8 +38,20 @@ public class Home extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.end_patrol);
-        policeNum = getIntent().getStringExtra("POLICE");
-        patrolers = getIntent().getStringArrayListExtra("LIST");
+        try {
+            policeNum = getIntent().getStringExtra("POLICE");
+        } catch(Exception e) {
+            Toast.makeText(Home.this,
+                    "Police Number unable to be retrieved!",
+                    Toast.LENGTH_LONG).show();
+        }
+        try {
+            patrolers = getIntent().getStringArrayListExtra("LIST");
+        } catch (Exception e) {
+            Toast.makeText(Home.this,
+                    "Patrolers unable to be retrieved!",
+                    Toast.LENGTH_LONG).show();
+        }
         polNum = (TextView) findViewById(R.id.curPoliceNum);
         polNum.setText("Police Job #" + policeNum);
         driverName = (TextView) findViewById(R.id.divName);
@@ -151,9 +163,8 @@ public class Home extends Activity{
                             Toast.makeText(Home.this, "Uploading!",
                                     Toast.LENGTH_SHORT).show();
                             //TODO call the method that saves and uploade everything to the database!
-                            Intent intent = new Intent(Home.this, SignIn.class);
-                            startActivity(intent);
                             alertDialog.dismiss();
+                            Home.this.finish();
                         }
                     }
                 });

@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -53,12 +52,15 @@ public class SignIn extends AppCompatActivity {
         //get permissions
         askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION);
         askForPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION);
+        askForPermission(Manifest.permission.READ_EXTERNAL_STORAGE, 1);
+        askForPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
         //get text fields
         patrolers = new ArrayList<String>();
         driver = (EditText) findViewById(R.id.driverNameField);
         observer = (EditText) findViewById(R.id.ob1NameField);
         observer2 = (EditText) findViewById(R.id.ob2NameField);
         policeNum = (EditText) findViewById(policeJobNumID);
+        policeNum.setText("P0");
         kms = (EditText) findViewById(R.id.vecStartField);
         //AddUser button listener
         Button addUser = (Button) findViewById(R.id.addUser);
@@ -168,7 +170,7 @@ public class SignIn extends AppCompatActivity {
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         saveToArray();
-                        //saveToFile();
+                        saveToFile();
                         Intent intent = new Intent(SignIn.this, Home.class);
                         intent.putExtra("POLICE", policeNum.getText().toString());
                         intent.putExtra("LIST", (Serializable) patrolers);
@@ -261,62 +263,51 @@ public class SignIn extends AppCompatActivity {
         }
     }
 
-    private boolean saveToFile() {
+    private void saveToFile() {
         Date currentTime = Calendar.getInstance().getTime();
         String tableID = createID(currentTime);
-        saveToEdit(tableID);
         saveToTimeLoc(tableID, currentTime);
-        return false;
-    }
-
-    private void saveToEdit(String id) {
-        File myFile;
-        File directory = this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-        String fileName = "Event.csv";
-        try {
-            myFile = new File(directory, fileName);
-            myFile.createNewFile();
-            FileOutputStream fOut = new FileOutputStream(myFile);
-            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-            myOutWriter.append(id + "," + id + "," + id + "," + id + ",,,,");
-            if (patrolers.size() > 2) {
-                myOutWriter.append(id);
-            }
-            myOutWriter.append(",,," + policeNum.getText() + ",,1");
-            myOutWriter.append("\n");
-            myOutWriter.close();
-        } catch (Exception e) {
-            Toast.makeText(SignIn.this,
-                    "Error: Could not save to Event.csv! " + e,
-                    Toast.LENGTH_LONG).show();
-        }
     }
 
     private void saveToTimeLoc(String id, Date time) {
-        File myFile;
-        File directory = this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-        String fileName = "TimeLoc.csv";
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/TImeLoc.txt");
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION);
+            askForPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION);
+        }
+        Location loc = manage.getLastKnownLocation(LocationManager.NETWORK_PROVIDER.toString());
+        ArrayList locList = calLoc(loc);
+        String[] data = {id, locList.get(0).toString(), locList.get(1).toString(),
+                android.text.format.DateFormat.format("yyy-MM-dd hh:mm:ss", time).toString()};
+
+        save(file, data);
+    }
+
+    private void save(File file, String[] data) {
+        FileOutputStream fos = null;
         try {
-            myFile = new File(directory, fileName);
-            myFile.createNewFile();
-            FileOutputStream fOut = new FileOutputStream(myFile);
-            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION);
-                askForPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION);
+            fos = new FileOutputStream(file);
+            for(int i = 0; i < data.length; i++) {
+                fos.write(data[i].getBytes());
+                if(i+1 < data.length) {
+                    fos.write(", ".getBytes());
+                }
+                fos.write("\n".getBytes());
             }
-            Location loc = manage.getLastKnownLocation(LocationManager.NETWORK_PROVIDER.toString());
-            ArrayList list = calLoc(loc);
-            myOutWriter.append(id+","+list.get(0)+","+list.get(1)+","
-                    +android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", time));
-            myOutWriter.append("\n");
-            myOutWriter.close();
+            fos.close();
         } catch (Exception e) {
-            Toast.makeText(SignIn.this,
-                    "Error: Could not save to TimeLoc.csv! " + e,
+            Toast.makeText(this,
+                    "Error: Could not save to file! " + e,
+                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this,
+                    "File info is: " + file.toString(),
                     Toast.LENGTH_LONG).show();
         }
     }
@@ -344,10 +335,6 @@ public class SignIn extends AppCompatActivity {
             } else {
                 ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
             }
-        } else {
-            Toast.makeText(this,
-                    "" + permission + " is already granted.",
-                    Toast.LENGTH_LONG).show();
         }
     }
 

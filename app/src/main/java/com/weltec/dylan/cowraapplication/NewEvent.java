@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -22,7 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,8 +34,8 @@ import java.util.List;
 public class NewEvent extends Activity {
 
     private Date currentTime;
-    private List events;
     private List patrolers;
+    private ArrayList<PropDetails> properties;
     private String id;
     private double latitude;
     private double longitude;
@@ -56,7 +55,6 @@ public class NewEvent extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_event);
         currentTime = Calendar.getInstance().getTime();
-        events = getIntent().getStringArrayListExtra("IDS");
         patrolers = getIntent().getStringArrayListExtra("LIST");
         id = createID(currentTime);
         eventId = (TextView) findViewById(R.id.eventIdField);
@@ -69,6 +67,7 @@ public class NewEvent extends Activity {
         lat.setText("Lat: " + Double.toString(latitude));
         lon.setText("Lon: " + Double.toString(longitude));
         people = new HashMap();
+        properties = new ArrayList();
         spotter = (Spinner) findViewById(R.id.spotterSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(NewEvent.this,
                 android.R.layout.simple_spinner_item,
@@ -98,23 +97,20 @@ public class NewEvent extends Activity {
         Button vehBtn = (Button) findViewById(R.id.VehicleBtn);
         vehBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-
-            }
-        });
+            public void onClick(View v) { vehiclePopUp(v); }});
         final Button submitEvent = (Button) findViewById(R.id.eventBtn);
         submitEvent.setText("Submit Event");
         submitEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitEvent();
+                closeEvent();
             }
         });
         Button cancel = (Button) findViewById(R.id.cancelBtn);
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cancelEvent();;
+                closeEvent();
             }
         });
     }
@@ -174,7 +170,7 @@ public class NewEvent extends Activity {
         layout.setOrientation(LinearLayout.VERTICAL);
         final EditText desc = new EditText(NewEvent.this);
         desc.setHint("Person Description:");
-        desc.setHeight(50);
+        desc.setHeight(250);
         final CheckBox box = new CheckBox(NewEvent.this);
         box.setText("BOLB");
         layout.addView(desc);
@@ -216,14 +212,38 @@ public class NewEvent extends Activity {
         //Create edit fields for the pop up window
         LinearLayout layout = new LinearLayout(NewEvent.this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        final EditText desc = new EditText(NewEvent.this);
-        desc.setHint("Person Description:");
-        final CheckBox box = new CheckBox(NewEvent.this);
-        box.setText("BOLB");
-        layout.addView(desc);
-        layout.addView(box);
+        TextView house = new TextView(NewEvent.this);
+        house.setText("House Number:");
+        final EditText num = new EditText(NewEvent.this);
+        num.setHint("e.g 163");
+        TextView street = new TextView(NewEvent.this);
+        street.setText("Street:");
+        final EditText add1 = new EditText(NewEvent.this);
+        add1.setHint("e.g Kent Tce");
+        TextView sub = new TextView(NewEvent.this);
+        sub.setText("Suburb:");
+        final EditText suburb = new EditText(NewEvent.this);
+        suburb.setHint("e.g Te Aro");
+        TextView city = new TextView(NewEvent.this);
+        city.setText("City:");
+        final EditText add2 = new EditText(NewEvent.this);
+        add2.setHint("e.g Wellington");
+        final CheckBox burglary = new CheckBox(NewEvent.this);
+        final CheckBox noise = new CheckBox(NewEvent.this);
+        burglary.setText("Burglary");
+        noise.setText("Noise");
+        layout.addView(house);
+        layout.addView(num);
+        layout.addView(street);
+        layout.addView(add1);
+        layout.addView(sub);
+        layout.addView(suburb);
+        layout.addView(city);
+        layout.addView(add2);
+        layout.addView(burglary);
+        layout.addView(noise);
         //Set the layout of the popup window
-        alert.setTitle("Public Person Description")
+        alert.setTitle("Property Details")
                 .setCancelable(false)
                 .setView(layout)
                 .setNegativeButton("Cancel", null)
@@ -237,37 +257,77 @@ public class NewEvent extends Activity {
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (desc.length() <= 0) {
-                            Toast.makeText(NewEvent.this, "Description Field empty!",
-                                    Toast.LENGTH_SHORT).show();
+                        if(num.getText().length() > 0
+                                && add1.getText().length() > 0
+                                && suburb.getText().length() > 0
+                                && add2.getText().length() > 0) {
+                            PropDetails temp = new PropDetails(Integer.parseInt(num.getText().toString()),
+                                    add1.getText().toString(),
+                                    suburb.getText().toString(),
+                                    add2.getText().toString());
+                            properties.add(temp);
                         } else {
-                            if(box.isChecked()) {
-                                people.put(1, desc.getText());
-                            } else {
-                                people.put(0, desc.getText());
-                            }
-                            Toast.makeText(NewEvent.this, "Person Description added!",
+                            Toast.makeText(NewEvent.this, "All fields are Required!",
                                     Toast.LENGTH_SHORT).show();
-                            alertDialog.dismiss();
                         }
                     }
                 });
     }
 
-    private void submitEvent() {
-        events.add(id);
-        Intent intent = new Intent(NewEvent.this, Home.class);
-        intent.putExtra("IDS", (Serializable) events);
-        startActivity(intent);
+    //vehicle button popup
+    private void vehiclePopUp(View v) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(NewEvent.this);
+        LinearLayout layout = new LinearLayout(NewEvent.this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        final TextView lP = new TextView(NewEvent.this);
+        lP.setText("License Plate:");
+        final EditText plate = new EditText(NewEvent.this);
+        plate.setHint("ABC123");
+        final TextView mk = new TextView(NewEvent.this);
+        mk.setText("Make");
+        final EditText make = new EditText(NewEvent.this);
+        make.setHint("Toyota");
+        final TextView md = new TextView(NewEvent.this);
+        md.setText("Model");
+        final EditText model = new EditText(NewEvent.this);
+        model.setHint("Corolla");
+        final TextView c = new TextView(NewEvent.this);
+        c.setText("Colour");
+        final EditText color = new EditText(NewEvent.this);
+        color.setHint("Red");
+        final TextView y = new TextView(NewEvent.this);
+        y.setText("Year");
+        final EditText year = new EditText(NewEvent.this);
+        year.setHint("2006");
+        final TextView cs = new TextView(NewEvent.this);
+        cs.setText("Class");
+        final EditText cls = new EditText(NewEvent.this);
+        cls.setHint("Car");
+        layout.addView(lP);
+        layout.addView(plate);
+        layout.addView(mk);
+        layout.addView(make);
+        layout.addView(md);
+        layout.addView(model);
+        layout.addView(c);
+        layout.addView(color);
+        layout.addView(y);
+        layout.addView(year);
+        layout.addView(cs);
+        layout.addView(cls);
+        alert.setTitle("Vehicle Details:")
+                .setCancelable(false)
+                .setView(layout)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.show();
     }
 
-    private void cancelEvent() {
-        Intent intent = new Intent(NewEvent.this, Home.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onBackPressed() {
-        // do nothing.
+    private void closeEvent() {
+        onBackPressed();
     }
 }
