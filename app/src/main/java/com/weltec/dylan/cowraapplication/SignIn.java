@@ -266,7 +266,98 @@ public class SignIn extends AppCompatActivity {
     private void saveToFile() {
         Date currentTime = Calendar.getInstance().getTime();
         String tableID = createID(currentTime);
+        saveToDescription(tableID);
+        saveToEvent(tableID);
+        saveToLogEvent(tableID);
+        saveToNotes(tableID);
+        saveToPatrollers(tableID);
+        saveToPeople(tableID);
+        saveToProperty(tableID);
+        saveToPublic(tableID);
         saveToTimeLoc(tableID, currentTime);
+        saveToVehicle(tableID);
+        saveToVehicleComp(tableID);
+    }
+
+    private void saveToDescription(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Description.txt");
+        String desc = " ";
+        for( Object temp : patrolers) {
+            desc += temp.toString() + " - ";
+        }
+        String[] data = {id, desc};
+        save(file, data);
+    }
+
+    private void saveToEvent(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Event.txt");
+        String blank = " ";
+        String[] data = {id, id, id, id, blank, blank, blank, blank, blank, id,
+                policeNum.getText().toString(), blank, Integer.toString(1)};
+        save(file, data);
+    }
+
+    private void saveToLogEvent(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/LogEvent.txt");
+        String[] data = {id, kms.getText().toString()};
+        save(file, data);
+    }
+
+    private void saveToNotes(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Notes.txt");
+        String[] data = {id, id};
+        save(file, data);
+    }
+
+    private void saveToPatrollers(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Patrollers.txt");
+        String[] results = result.split(",");
+        String[] data = {id, results[0], Integer.toString(1)};
+        String[] data2 = {id, results[1], Integer.toString(0)};
+        save(file, data);
+        saveAppend(file, data2);
+    }
+
+    private void saveToPeople(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/People.txt");
+        String[] data = {};
+        save(file, data);
+    }
+
+    private void saveToProperty(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Property.txt");
+        String[] data = {};
+        save(file, data);
+    }
+
+    private void saveToPublic(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Public.txt");
+        String[] data = {};
+        save(file, data);
     }
 
     private void saveToTimeLoc(String id, Date time) {
@@ -274,7 +365,6 @@ public class SignIn extends AppCompatActivity {
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/TImeLoc.txt");
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -286,7 +376,24 @@ public class SignIn extends AppCompatActivity {
         ArrayList locList = calLoc(loc);
         String[] data = {id, locList.get(0).toString(), locList.get(1).toString(),
                 android.text.format.DateFormat.format("yyy-MM-dd hh:mm:ss", time).toString()};
+        save(file, data);
+    }
 
+    private void saveToVehicle(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Vehicle.txt");
+        String[] data = {};
+        save(file, data);
+    }
+
+    private void saveToVehicleComp(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/VehicleComp.txt");
+        String[] data = {};
         save(file, data);
     }
 
@@ -294,6 +401,28 @@ public class SignIn extends AppCompatActivity {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(file);
+            for(int i = 0; i < data.length; i++) {
+                fos.write(data[i].getBytes());
+                if(i+1 < data.length) {
+                    fos.write(", ".getBytes());
+                }
+                fos.write("\n".getBytes());
+            }
+            fos.close();
+        } catch (Exception e) {
+            Toast.makeText(this,
+                    "Error: Could not save to file! " + e,
+                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this,
+                    "File info is: " + file.toString(),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void saveAppend(File file, String[] data) {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file, true);
             for(int i = 0; i < data.length; i++) {
                 fos.write(data[i].getBytes());
                 if(i+1 < data.length) {

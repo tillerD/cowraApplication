@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -21,6 +22,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -49,6 +52,7 @@ public class NewEvent extends Activity {
     private LocationManager manage;
     private LocationListener listener;
     private HashMap people;
+    private EditText text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +107,8 @@ public class NewEvent extends Activity {
         submitEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                text = (EditText) findViewById(R.id.description);
+                saveData();
                 closeEvent();
             }
         });
@@ -257,6 +263,17 @@ public class NewEvent extends Activity {
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        int n, b;
+                        if(noise.isChecked()) {
+                            n = 1;
+                        } else {
+                            n = 0;
+                        }
+                        if(burglary.isChecked()) {
+                            b = 1;
+                        } else {
+                            b = 0;
+                        }
                         if(num.getText().length() > 0
                                 && add1.getText().length() > 0
                                 && suburb.getText().length() > 0
@@ -264,7 +281,8 @@ public class NewEvent extends Activity {
                             PropDetails temp = new PropDetails(Integer.parseInt(num.getText().toString()),
                                     add1.getText().toString(),
                                     suburb.getText().toString(),
-                                    add2.getText().toString());
+                                    add2.getText().toString(),
+                                    n, b);
                             properties.add(temp);
                         } else {
                             Toast.makeText(NewEvent.this, "All fields are Required!",
@@ -325,6 +343,79 @@ public class NewEvent extends Activity {
                 });
         final AlertDialog alertDialog = alert.create();
         alertDialog.show();
+    }
+
+    private void saveData() {
+        String tableID = eventId.getText().toString();
+        saveToDescription(tableID);
+        saveToNotes(tableID);
+    }
+
+    private void saveToDescription(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Description.txt");
+        String desc = spotter.getSelectedItem().toString() + " - " +
+                cats.getSelectedItem().toString() + " - " + text.getText().toString();
+        String[] data = {id, desc};
+        save(file, data);
+    }
+
+    private void saveToNotes(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Notes.txt");
+        String[] data = {id, id};
+        save(file, data);
+    }
+
+    private void saveToPeople(String id) {
+        if(people.isEmpty() == false) {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+            File dir = new File(path);
+            dir.mkdirs();
+            File file = new File(path, "/People.txt");
+            String[] data = {id, id};
+            save(file, data);
+        }
+    }
+
+    private void saveToProperty(String id) {
+        if(properties.isEmpty() == false) {
+            PropDetails temp = properties.get(0);
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+            File dir = new File(path);
+            dir.mkdirs();
+            File file = new File(path, "/Property.txt");
+            String[] data = {id, Integer.toString(temp.getNumber()), temp.getStreet(),
+                    temp.getSuburb(), temp.getCity(), Integer.toString(temp.getNoise()),
+                    Integer.toString(temp.getBulglary())};
+            save(file, data);
+        }
+    }
+
+    private void save(File file, String[] data) {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file, true);
+            for(int i = 0; i < data.length; i++) {
+                fos.write(data[i].getBytes());
+                if(i+1 < data.length) {
+                    fos.write(", ".getBytes());
+                }
+                fos.write("\n".getBytes());
+            }
+            fos.close();
+        } catch (Exception e) {
+            Toast.makeText(this,
+                    "Error: Could not save to file! " + e,
+                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this,
+                    "File info is: " + file.toString(),
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     private void closeEvent() {
