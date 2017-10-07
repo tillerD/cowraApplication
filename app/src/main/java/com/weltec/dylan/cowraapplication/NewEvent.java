@@ -37,7 +37,6 @@ public class NewEvent extends Activity {
 
     private Date currentTime;
     private List patrolers;
-    private List vehIds;
     private ArrayList<People> people;
     private ArrayList<PropDetails> properties;
     private ArrayList<Vehicle> vehicles;
@@ -75,9 +74,10 @@ public class NewEvent extends Activity {
         lat.setText("Lat: " + Double.toString(latitude));
         lon.setText("Lon: " + Double.toString(longitude));
         policeJobNum = (EditText) findViewById(R.id.policeJobNumTxtField);
+        policeJobNum.setText("P0");
         councilJobNum = (EditText) findViewById(R.id.councilJobNumTxtField);
+        councilJobNum.setText("C:");
         people = new ArrayList();
-        vehIds = new ArrayList();
         properties = new ArrayList();
         vehicles = new ArrayList();
         blob = 0;
@@ -227,8 +227,9 @@ public class NewEvent extends Activity {
                 });
     }
 
+    //Property popup window
     private void propertyPopUp(View v) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(NewEvent.this);
+        final AlertDialog.Builder alert = new AlertDialog.Builder(NewEvent.this);
         //Create edit fields for the pop up window
         LinearLayout layout = new LinearLayout(NewEvent.this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -298,6 +299,9 @@ public class NewEvent extends Activity {
                                     add2.getText().toString(),
                                     n, b);
                             properties.add(temp);
+                            Toast.makeText(NewEvent.this, "Property Details saved!",
+                                    Toast.LENGTH_SHORT).show();
+                            alertDialog.dismiss();
                         } else {
                             Toast.makeText(NewEvent.this, "All fields are Required!",
                                     Toast.LENGTH_SHORT).show();
@@ -376,7 +380,6 @@ public class NewEvent extends Activity {
                             vehicles.add(temp);
                             Toast.makeText(NewEvent.this, "Vehicle Information added!",
                                     Toast.LENGTH_SHORT).show();
-                            vehIds.add(createID(Calendar.getInstance().getTime()));
                             alertDialog.dismiss();
                         }
                     }
@@ -498,10 +501,10 @@ public class NewEvent extends Activity {
         dir.mkdirs();
         File file = new File(path, "/Event.txt");
         String blank = " ";
-        String veh = null;
-        String will = null;
-        String prop = null;
-        String pep = null;
+        String veh = " ";
+        String will = " ";
+        String prop = " ";
+        String pep = " ";
         if(vehicles.isEmpty() == false) {veh = id;}
         if(cats.getSelectedItem().toString().equals("--Wilful Damage--")) {
             will = Integer.toString(1);}

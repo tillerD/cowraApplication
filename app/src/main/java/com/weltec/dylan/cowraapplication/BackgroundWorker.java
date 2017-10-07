@@ -86,7 +86,8 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
                 wr.write(data);
                 wr.flush();
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                BufferedReader reader = new BufferedReader(new
+                        InputStreamReader(conn.getInputStream()));
                 StringBuilder sb = new StringBuilder();
                 String line = null;
 

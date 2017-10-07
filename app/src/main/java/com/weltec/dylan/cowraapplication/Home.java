@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -16,6 +17,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,14 +68,9 @@ public class Home extends Activity{
                 obList.append(row.toString() + "\n");
             }
         }
-        try {
-            events = getIntent().getStringArrayListExtra("IDS");
-            eventIds = (RadioGroup) findViewById(R.id.eventIdList);
-            eventIds.setOrientation(RadioGroup.VERTICAL);
-            displayEvents(events, eventIds);
-        } catch (Exception e) {
-            events = new ArrayList();
-        }
+        eventIds = (RadioGroup) findViewById(R.id.eventIdList);
+        eventIds.setOrientation(RadioGroup.VERTICAL);
+        events = new ArrayList();
         Button swapDriver = (Button) findViewById(R.id.swapDriverBtn);
         swapDriver.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +90,20 @@ public class Home extends Activity{
             @Override
             public void onClick(View v) {
                 newEvent(v);
+            }
+        });
+        Button refreshList = (Button) findViewById(R.id.refresh);
+        refreshList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refreshIds();
+            }
+        });
+        final Button editEvent = (Button) findViewById(R.id.editEventBtn);
+        editEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editEvent(v, eventIds);
             }
         });
     }
@@ -162,7 +176,7 @@ public class Home extends Activity{
                         } else {
                             Toast.makeText(Home.this, "Uploading!",
                                     Toast.LENGTH_SHORT).show();
-                            //TODO call the method that saves and uploade everything to the database!
+                            //TODO call the method that saves and uploads everything to the database!
                             alertDialog.dismiss();
                             Home.this.finish();
                         }
@@ -173,6 +187,7 @@ public class Home extends Activity{
     private void displayEvents(List events, RadioGroup group) {
         int num = events.size();
         final RadioButton[] rb = new RadioButton[num];
+        group.removeAllViews();
         for(int i=0; i<num; i++) {
             rb[i] = new RadioButton(this);
             rb[i].setText(events.get(i).toString());
@@ -186,6 +201,66 @@ public class Home extends Activity{
         intent.putExtra("IDS", (Serializable) events);
         intent.putExtra("LIST", (Serializable) patrolers);
         startActivity(intent);
+    }
+
+    private void editEvent(View v, RadioGroup group) {
+        int index = group.getCheckedRadioButtonId();
+        RadioButton button = (RadioButton) findViewById(index);
+        String singleId = button.getText().toString();
+        Intent intent = new Intent(Home.this, EditEvent.class);
+        intent.putExtra("IDS", singleId);
+        intent.putExtra("LIST", (Serializable) patrolers);
+        startActivity(intent);
+    }
+
+    private void refreshIds() {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Event.txt");
+        String[] data = load(file);
+        List idList = new ArrayList();
+        if(data.length > 13) {
+            for (int i = 13; i < data.length; i += 13) {
+                idList.add(data[i].toString().replaceAll(",", " "));
+            }
+            displayEvents(idList, eventIds);
+        } else {
+            Toast.makeText(Home.this,
+                    "No events to display!",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static String[] load(File file)
+    {
+        FileInputStream fis = null;
+        String[] array;
+        try
+        {
+            fis = new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            String test;
+            int anzahl=0;
+            while ((test=br.readLine()) != null)
+            {
+                anzahl++;
+            }
+            fis.getChannel().position(0);
+            array = new String[anzahl];
+            String line;
+            int i = 0;
+            while((line=br.readLine())!=null)
+            {
+                array[i] = line;
+                i++;
+            }
+        }
+        catch (Exception e) {
+            array = new String[0];
+        }
+        return array;
     }
 
     @Override

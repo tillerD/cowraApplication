@@ -132,7 +132,7 @@
     <TextView
         android:id="@+id/divName"
         android:layout_width="692dp"
-        android:layout_height="45dp"
+        android:layout_height="58dp"
         android:text="Current driver name"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -140,7 +140,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.211" />
+        app:layout_constraintVertical_bias="0.209" />
 
     <RadioGroup
         android:id="@+id/eventIdList"
@@ -152,5 +152,17 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.316" />
+
+    <Button
+        android:id="@+id/refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Refresh"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.921"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.061" />
 
 </android.support.constraint.ConstraintLayout>
