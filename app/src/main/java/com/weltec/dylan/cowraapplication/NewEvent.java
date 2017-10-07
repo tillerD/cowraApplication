@@ -27,7 +27,6 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -38,7 +37,10 @@ public class NewEvent extends Activity {
 
     private Date currentTime;
     private List patrolers;
+    private List vehIds;
+    private ArrayList<People> people;
     private ArrayList<PropDetails> properties;
+    private ArrayList<Vehicle> vehicles;
     private String id;
     private double latitude;
     private double longitude;
@@ -51,8 +53,10 @@ public class NewEvent extends Activity {
     private final Integer LOCATION = 0x1;
     private LocationManager manage;
     private LocationListener listener;
-    private HashMap people;
     private EditText text;
+    private EditText policeJobNum;
+    private EditText councilJobNum;
+    private int blob;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +74,13 @@ public class NewEvent extends Activity {
         getLocation();
         lat.setText("Lat: " + Double.toString(latitude));
         lon.setText("Lon: " + Double.toString(longitude));
-        people = new HashMap();
+        policeJobNum = (EditText) findViewById(R.id.policeJobNumTxtField);
+        councilJobNum = (EditText) findViewById(R.id.councilJobNumTxtField);
+        people = new ArrayList();
+        vehIds = new ArrayList();
         properties = new ArrayList();
+        vehicles = new ArrayList();
+        blob = 0;
         spotter = (Spinner) findViewById(R.id.spotterSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(NewEvent.this,
                 android.R.layout.simple_spinner_item,
@@ -110,6 +119,8 @@ public class NewEvent extends Activity {
                 text = (EditText) findViewById(R.id.description);
                 saveData();
                 closeEvent();
+                Toast.makeText(NewEvent.this, "Event Saved!",
+                        Toast.LENGTH_SHORT).show();
             }
         });
         Button cancel = (Button) findViewById(R.id.cancelBtn);
@@ -200,10 +211,13 @@ public class NewEvent extends Activity {
                             Toast.makeText(NewEvent.this, "Description Field empty!",
                                     Toast.LENGTH_SHORT).show();
                         } else {
+                            String id = createID(Calendar.getInstance().getTime());
                             if(box.isChecked()) {
-                                people.put(1, desc.getText());
+                                People temp = new People(id, desc.getText().toString(), 1);
+                                people.add(temp);
                             } else {
-                                people.put(0, desc.getText());
+                                People temp = new People(id, desc.getText().toString(), 0);
+                                people.add(temp);
                             }
                             Toast.makeText(NewEvent.this, "Person Description added!",
                                     Toast.LENGTH_SHORT).show();
@@ -336,19 +350,50 @@ public class NewEvent extends Activity {
         alert.setTitle("Vehicle Details:")
                 .setCancelable(false)
                 .setView(layout)
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
                     }
                 });
         final AlertDialog alertDialog = alert.create();
         alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (plate.length() <= 0 && make.length() <= 0 &&
+                                model.length() <= 0 && color.length() <= 0 &&
+                                year.length() <= 0 && cls.length() <= 0) {
+                            Toast.makeText(NewEvent.this, "Fields can not be empty!",
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            String id = createID(Calendar.getInstance().getTime());
+                            Vehicle temp = new Vehicle(plate.getText().toString(),
+                                    make.getText().toString(), model.getText().toString(),
+                                    color.getText().toString(), year.getText().toString(),
+                                    cls.getText().toString(), id);
+                            vehicles.add(temp);
+                            Toast.makeText(NewEvent.this, "Vehicle Information added!",
+                                    Toast.LENGTH_SHORT).show();
+                            vehIds.add(createID(Calendar.getInstance().getTime()));
+                            alertDialog.dismiss();
+                        }
+                    }
+                });
     }
 
     private void saveData() {
         String tableID = eventId.getText().toString();
         saveToDescription(tableID);
         saveToNotes(tableID);
+        saveToPeople(tableID);
+        saveToProperty(tableID);
+        saveToPublic();
+        saveToTimeLoc(tableID, currentTime);
+        saveToVehicle();
+        saveToVehicleComp(tableID);
+        saveToEvent(tableID);
     }
 
     private void saveToDescription(String id) {
@@ -377,8 +422,10 @@ public class NewEvent extends Activity {
             File dir = new File(path);
             dir.mkdirs();
             File file = new File(path, "/People.txt");
-            String[] data = {id, id};
-            save(file, data);
+            for(People temp : people) {
+                String[] data = {id, temp.getId()};
+                save(file, data);
+            }
         }
     }
 
@@ -394,6 +441,76 @@ public class NewEvent extends Activity {
                     Integer.toString(temp.getBulglary())};
             save(file, data);
         }
+    }
+
+    private void saveToPublic() {
+        if(people.isEmpty() == false) {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+            File dir = new File(path);
+            dir.mkdirs();
+            File file = new File(path, "/Public.txt");
+            for(People temp : people) {
+                String[] data = {temp.getId(), temp.getDescription()};
+                if(temp.getBlob() == 1) {
+                    blob++;
+                }
+                save(file, data);
+            }
+        }
+    }
+
+    private void saveToTimeLoc(String id, Date time) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/TImeLoc.txt");
+        String[] data = {id, lat.getText().toString(), lon.getText().toString(),
+                android.text.format.DateFormat.format("yyy-MM-dd hh:mm:ss", time).toString()};
+        save(file, data);
+    }
+
+    private void saveToVehicle() {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Vehicle.txt");
+        for(Vehicle temp : vehicles) {
+            String[] data = {temp.getId(), temp.getlPlate(), temp.getColor(), temp.getMake(),
+                    temp.getModel(), temp.getYear(), temp.getCarClass()};
+            save(file, data);
+        }
+    }
+
+    private void saveToVehicleComp(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/VehicleComp.txt");
+        for(Vehicle temp : vehicles) {
+            String[] data = {id, temp.getId()};
+            save(file, data);
+        }
+    }
+
+    private void saveToEvent(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Event.txt");
+        String blank = " ";
+        String veh = null;
+        String will = null;
+        String prop = null;
+        String pep = null;
+        if(vehicles.isEmpty() == false) {veh = id;}
+        if(cats.getSelectedItem().toString().equals("--Wilful Damage--")) {
+            will = Integer.toString(1);}
+        if(properties.isEmpty() == false) {prop = id;}
+        if(people.isEmpty() == false) {pep = id;}
+        String[] data = {id, id, blank, blank, veh, will, prop, pep, Integer.toString(blob),
+                id, policeJobNum.getText().toString(), councilJobNum.getText().toString(),
+                Integer.toString(0)};
+        save(file, data);
     }
 
     private void save(File file, String[] data) {
