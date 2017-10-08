@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -14,6 +15,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,9 +33,19 @@ public class EditEvent extends Activity{
 
     private List patrolers;
     private String id;
+    private int blob;
     private ArrayList<People> people;
     private ArrayList<PropDetails> properties;
     private ArrayList<Vehicle> vehicles;
+    private TextView lat;
+    private TextView lon;
+    private TextView time;
+    private EditText desc;
+    private EditText text;
+    private EditText policeJobNum;
+    private EditText councilJobNum;
+    private Spinner spotter;
+    private Spinner cats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +53,26 @@ public class EditEvent extends Activity{
         setContentView(R.layout.new_event);
         patrolers = getIntent().getStringArrayListExtra("LIST");
         id = getIntent().getStringExtra("IDS");
-        TextView eventId = (TextView) findViewById(R.id.eventIdField);
-        eventId.setText(id);
-        Spinner spotter = (Spinner) findViewById(R.id.spotterSpinner);
+        TextView eventId = (TextView) findViewById(R.id.submitEventLabel);
+        eventId.setText("Edit Event - ID: " + id);
+        policeJobNum = (EditText) findViewById(R.id.policeJobNumTxtField);
+        policeJobNum.setText("P0");
+        councilJobNum = (EditText) findViewById(R.id.councilJobNumTxtField);
+        councilJobNum.setText("C:");
+        blob = getBolb(id);
+        lat = (TextView) findViewById(R.id.latField);
+        lon = (TextView) findViewById(R.id.lonField);
+        time = (TextView) findViewById(R.id.timefield);
+        getTimeLoc(id);
+        desc = (EditText) findViewById(R.id.description);
+        getDescription(id);
+        spotter = (Spinner) findViewById(R.id.spotterSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(EditEvent.this,
                 android.R.layout.simple_spinner_item,
                 patrolers);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spotter.setAdapter(adapter);
-        Spinner cats = (Spinner) findViewById(R.id.eventSpinner);
+        cats = (Spinner) findViewById(R.id.eventSpinner);
         ArrayAdapter<CharSequence> adapt = ArrayAdapter.createFromResource(EditEvent.this,
                 R.array.category,
                 android.R.layout.simple_spinner_item);
@@ -70,7 +97,28 @@ public class EditEvent extends Activity{
         vehBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { vehiclePopUp(v); }});
-
+        final Button submitEvent = (Button) findViewById(R.id.eventBtn);
+        submitEvent.setText("Submit Event");
+        submitEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                text = (EditText) findViewById(R.id.description);
+                try {
+                    if (text.toString().isEmpty() == false) {
+                        saveData();
+                        closeEvent();
+                        Toast.makeText(EditEvent.this, "Event Saved!",
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(EditEvent.this, "Description field must be filled!",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(EditEvent.this, "Error saving data: " + e,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         Button cancel = (Button) findViewById(R.id.cancelBtn);
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -292,6 +340,238 @@ public class EditEvent extends Activity{
                 + Integer.toString(time.getYear()) + Integer.toString(time.getHours())
                 + Integer.toString(time.getMinutes()) + Integer.toString(time.getSeconds());
         return id;
+    }
+
+    private void getTimeLoc(String eventId) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/TimeLoc.txt");
+        String[] data = load(file);
+        try {
+            for (int i = 0; i < data.length; i += 4) {
+                String check = data[i].toString();
+                String value = id;
+                if (check.contains(value)) {
+                    String latitude = data[i + 1].toString().replaceAll(",", " ");
+                    String longitude = data[i + 2].toString().replaceAll(",", " ");
+                    String ticToc = data[i + 3].toString().replaceAll(",", " ");
+                    String[] justTime = ticToc.split("-|\\ |\\:");
+                    lat.setText(latitude);
+                    lon.setText(longitude);
+                    time.setText(justTime[3].toString() + ":" + justTime[4].toString());
+                }
+            }
+        } catch (Exception e) {
+            Toast.makeText(EditEvent.this, "Failed getting TimeLoc data!",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void getDescription(String eventId) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Description.txt");
+        String[] data = load(file);
+        try {
+            for (int i = 0; i < data.length; i += 2) {
+                String check = data[i].toString();
+                String value = id;
+                if (check.contains(value)) {
+                    String temp = data[i + 1].toString(); //.replaceAll(",", " ");
+                    desc.setText(temp);
+                }
+            }
+        } catch (Exception e) {
+            Toast.makeText(EditEvent.this, "Failed getting Event description!",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private int getBolb(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Event.txt");
+        String[] data = load(file);
+        if(data.length > 13) {
+            try {
+                for (int i = 13; i < data.length; i += 13) {
+                    String check = data[i].toString();
+                    String value = id;
+                    if (check.contains(value)) {
+                        String pjn = data[i + 10].toString().replaceAll(",", " ");
+                        String cjn = data[i + 11].toString().replaceAll(",", " ");
+                        policeJobNum.setText(pjn);
+                        councilJobNum.setText(cjn);
+                        String temp = data[i + 8].toString().replaceAll(",", " ");
+                        String[] array = temp.split(" ");
+                        int var = Integer.valueOf(array[0]);
+                        return var;
+                    }
+                }
+            } catch(Exception e){
+                Toast.makeText(EditEvent.this, "Failed getting BOLB value!",
+                        Toast.LENGTH_SHORT).show();
+                return 0;
+            }
+        } else {
+            return 0;
+        }
+        return 0;
+    }
+
+    private void saveData() {
+        String oldID = id;
+        String newID = createID(Calendar.getInstance().getTime());;
+        saveToDescription(newID);
+        saveToNotes(oldID, newID);
+        saveToPeople(oldID);
+        saveToProperty(oldID);
+        saveToPublic();
+        saveToVehicle();
+        saveToVehicleComp(oldID);
+    }
+
+    private void saveToDescription(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Description.txt");
+        String info = spotter.getSelectedItem().toString() + " - " +
+                cats.getSelectedItem().toString() + " - " + desc.getText().toString() +
+                " - " + Calendar.getInstance().getTime().toString() +
+                " - " + Integer.toString(blob);
+        String[] data = {id, info + " "};
+        save(file, data);
+    }
+
+    private void saveToNotes(String old, String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Notes.txt");
+        String[] data = {old, id + " "};
+        save(file, data);
+    }
+
+    private void save(File file, String[] data) {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file, true);
+            for(int i = 0; i < data.length; i++) {
+                fos.write(data[i].getBytes());
+                if(i+1 < data.length) {
+                    fos.write(", ".getBytes());
+                }
+                fos.write("\n".getBytes());
+            }
+            fos.close();
+        } catch (Exception e) {
+            Toast.makeText(this,
+                    "Error: Could not save to file! " + e,
+                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this,
+                    "File info is: " + file.toString(),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void saveToPeople(String id) {
+        if(people.isEmpty() == false) {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+            File dir = new File(path);
+            dir.mkdirs();
+            File file = new File(path, "/People.txt");
+            for(People temp : people) {
+                String[] data = {id, temp.getId() + " "};
+                save(file, data);
+            }
+        }
+    }
+
+    private void saveToProperty(String id) {
+        if(properties.isEmpty() == false) {
+            PropDetails temp = properties.get(0);
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+            File dir = new File(path);
+            dir.mkdirs();
+            File file = new File(path, "/Property.txt");
+            String[] data = {id, Integer.toString(temp.getNumber()), temp.getStreet(),
+                    temp.getSuburb(), temp.getCity(), Integer.toString(temp.getNoise()),
+                    Integer.toString(temp.getBulglary()) + " "};
+            save(file, data);
+        }
+    }
+
+    private void saveToPublic() {
+        if(people.isEmpty() == false) {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+            File dir = new File(path);
+            dir.mkdirs();
+            File file = new File(path, "/Public.txt");
+            for(People temp : people) {
+                String[] data = {temp.getId(), temp.getDescription() + " "};
+                if(temp.getBlob() == 1) {
+                    blob++;
+                }
+                save(file, data);
+            }
+        }
+    }
+
+    private void saveToVehicle() {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Vehicle.txt");
+        for(Vehicle temp : vehicles) {
+            String[] data = {temp.getId(), temp.getlPlate(), temp.getColor(), temp.getMake(),
+                    temp.getModel(), temp.getYear(), temp.getCarClass() + " "};
+            save(file, data);
+        }
+    }
+
+    private void saveToVehicleComp(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/VehicleComp.txt");
+        for(Vehicle temp : vehicles) {
+            String[] data = {id, temp.getId() + " "};
+            save(file, data);
+        }
+    }
+
+    public static String[] load(File file) {
+        FileInputStream fis = null;
+        String[] array;
+        try
+        {
+            fis = new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            String test;
+            int anzahl=0;
+            while ((test=br.readLine()) != null)
+            {
+                anzahl++;
+            }
+            fis.getChannel().position(0);
+            array = new String[anzahl];
+            String line;
+            int i = 0;
+            while((line=br.readLine())!=null)
+            {
+                array[i] = line;
+                i++;
+            }
+        }
+        catch (Exception e) {
+            array = new String[0];
+        }
+        return array;
     }
 
     private void closeEvent() {

@@ -64,8 +64,8 @@ public class NewEvent extends Activity {
         currentTime = Calendar.getInstance().getTime();
         patrolers = getIntent().getStringArrayListExtra("LIST");
         id = createID(currentTime);
-        eventId = (TextView) findViewById(R.id.eventIdField);
-        eventId.setText(id);
+        eventId = (TextView) findViewById(R.id.submitEventLabel);
+        eventId.setText("New Event - ID: " + id);
         lat = (TextView) findViewById(R.id.latField);
         lon = (TextView) findViewById(R.id.lonField);
         time = (TextView) findViewById(R.id.timefield);
@@ -117,10 +117,20 @@ public class NewEvent extends Activity {
             @Override
             public void onClick(View v) {
                 text = (EditText) findViewById(R.id.description);
-                saveData();
-                closeEvent();
-                Toast.makeText(NewEvent.this, "Event Saved!",
-                        Toast.LENGTH_SHORT).show();
+                try {
+                    if (text.toString().isEmpty() == false) {
+                        saveData();
+                        closeEvent();
+                        Toast.makeText(NewEvent.this, "Event Saved!",
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(NewEvent.this, "Description field must be filled!",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(NewEvent.this, "Error saving data: " + e,
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
         Button cancel = (Button) findViewById(R.id.cancelBtn);
@@ -387,7 +397,7 @@ public class NewEvent extends Activity {
     }
 
     private void saveData() {
-        String tableID = eventId.getText().toString();
+        String tableID = id;
         saveToDescription(tableID);
         saveToNotes(tableID);
         saveToPeople(tableID);
@@ -404,9 +414,15 @@ public class NewEvent extends Activity {
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/Description.txt");
+        String catt;
+        if(cats.getSelectedItem().toString().contains("--Event Category--")) {
+            catt = " ";
+        } else {
+            catt = cats.getSelectedItem().toString().replaceAll("-", " ");
+        }
         String desc = spotter.getSelectedItem().toString() + " - " +
-                cats.getSelectedItem().toString() + " - " + text.getText().toString();
-        String[] data = {id, desc};
+                catt + " - " + text.getText().toString();
+        String[] data = {id, desc + " "};
         save(file, data);
     }
 
@@ -415,7 +431,7 @@ public class NewEvent extends Activity {
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/Notes.txt");
-        String[] data = {id, id};
+        String[] data = {id, id + " "};
         save(file, data);
     }
 
@@ -426,7 +442,7 @@ public class NewEvent extends Activity {
             dir.mkdirs();
             File file = new File(path, "/People.txt");
             for(People temp : people) {
-                String[] data = {id, temp.getId()};
+                String[] data = {id, temp.getId() + " "};
                 save(file, data);
             }
         }
@@ -441,7 +457,7 @@ public class NewEvent extends Activity {
             File file = new File(path, "/Property.txt");
             String[] data = {id, Integer.toString(temp.getNumber()), temp.getStreet(),
                     temp.getSuburb(), temp.getCity(), Integer.toString(temp.getNoise()),
-                    Integer.toString(temp.getBulglary())};
+                    Integer.toString(temp.getBulglary()) + " "};
             save(file, data);
         }
     }
@@ -453,7 +469,7 @@ public class NewEvent extends Activity {
             dir.mkdirs();
             File file = new File(path, "/Public.txt");
             for(People temp : people) {
-                String[] data = {temp.getId(), temp.getDescription()};
+                String[] data = {temp.getId(), temp.getDescription() + " "};
                 if(temp.getBlob() == 1) {
                     blob++;
                 }
@@ -468,7 +484,7 @@ public class NewEvent extends Activity {
         dir.mkdirs();
         File file = new File(path, "/TImeLoc.txt");
         String[] data = {id, lat.getText().toString(), lon.getText().toString(),
-                android.text.format.DateFormat.format("yyy-MM-dd hh:mm:ss", time).toString()};
+                android.text.format.DateFormat.format("yyy-MM-dd hh:mm:ss", time).toString() + " "};
         save(file, data);
     }
 
@@ -479,7 +495,7 @@ public class NewEvent extends Activity {
         File file = new File(path, "/Vehicle.txt");
         for(Vehicle temp : vehicles) {
             String[] data = {temp.getId(), temp.getlPlate(), temp.getColor(), temp.getMake(),
-                    temp.getModel(), temp.getYear(), temp.getCarClass()};
+                    temp.getModel(), temp.getYear(), temp.getCarClass() + " "};
             save(file, data);
         }
     }
@@ -490,7 +506,7 @@ public class NewEvent extends Activity {
         dir.mkdirs();
         File file = new File(path, "/VehicleComp.txt");
         for(Vehicle temp : vehicles) {
-            String[] data = {id, temp.getId()};
+            String[] data = {id, temp.getId() + " "};
             save(file, data);
         }
     }
@@ -512,7 +528,7 @@ public class NewEvent extends Activity {
         if(people.isEmpty() == false) {pep = id;}
         String[] data = {id, id, blank, blank, veh, will, prop, pep, Integer.toString(blob),
                 id, policeJobNum.getText().toString(), councilJobNum.getText().toString(),
-                Integer.toString(0)};
+                Integer.toString(0) + " "};
         save(file, data);
     }
 

@@ -204,13 +204,20 @@ public class Home extends Activity{
     }
 
     private void editEvent(View v, RadioGroup group) {
-        int index = group.getCheckedRadioButtonId();
-        RadioButton button = (RadioButton) findViewById(index);
-        String singleId = button.getText().toString();
-        Intent intent = new Intent(Home.this, EditEvent.class);
-        intent.putExtra("IDS", singleId);
-        intent.putExtra("LIST", (Serializable) patrolers);
-        startActivity(intent);
+        try {
+            int index = group.getCheckedRadioButtonId();
+            RadioButton button = (RadioButton) findViewById(index);
+            String singleId = button.getText().toString();
+            String[] data = singleId.split(" ");
+            Intent intent = new Intent(Home.this, EditEvent.class);
+            intent.putExtra("IDS", data[0]);
+            intent.putExtra("LIST", (Serializable) patrolers);
+            startActivity(intent);
+        } catch (Exception e){
+            Toast.makeText(Home.this,
+                    "No Event ID Selected!",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void refreshIds() {
@@ -218,11 +225,18 @@ public class Home extends Activity{
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/Event.txt");
+        File file2 = new File(path, "/TimeLoc.txt");
         String[] data = load(file);
+        String[] data2 = load(file2);
         List idList = new ArrayList();
         if(data.length > 13) {
             for (int i = 13; i < data.length; i += 13) {
-                idList.add(data[i].toString().replaceAll(",", " "));
+                for(int j = 0; j < data2.length; j += 4) {
+                    if(data2[j].toString().contains(data[i])) {
+                        idList.add(data[i].toString().replaceAll(",", " ") + "Date/Time: " +
+                                data2[j+3].toString().replaceAll(",", " "));
+                    }
+                }
             }
             displayEvents(idList, eventIds);
         } else {
@@ -232,8 +246,7 @@ public class Home extends Activity{
         }
     }
 
-    public static String[] load(File file)
-    {
+    public static String[] load(File file) {
         FileInputStream fis = null;
         String[] array;
         try
