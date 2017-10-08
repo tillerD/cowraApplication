@@ -31,6 +31,10 @@
             android:name=".NewEvent"
             android:screenOrientation="landscape">
         </activity>
+        <activity
+            android:name=".EditEvent"
+            android:screenOrientation="landscape">
+        </activity>
     </application>
 
 </manifest>
