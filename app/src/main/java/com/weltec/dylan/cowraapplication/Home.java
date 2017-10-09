@@ -1,10 +1,18 @@
 package com.weltec.dylan.cowraapplication;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -20,9 +28,12 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,17 +43,22 @@ import java.util.List;
 public class Home extends Activity{
 
     private String policeNum;
+    private double miles;
     private List patrolers;
     private List events;
     private TextView polNum;
     private TextView obList;
     private TextView driverName;
     private RadioGroup eventIds;
+    private final Integer LOCATION = 0x1;
+    private LocationManager manage;
+    private LocationListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.end_patrol);
+        miles = 0;
         try {
             policeNum = getIntent().getStringExtra("POLICE");
         } catch(Exception e) {
@@ -106,6 +122,33 @@ public class Home extends Activity{
                 editEvent(v, eventIds);
             }
         });
+        //Location
+        manage = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        listener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+            }
+        };
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION);
+            askForPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION);
+        }
+        manage.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
     }
 
     //Patroler popup window
@@ -174,11 +217,19 @@ public class Home extends Activity{
                             Toast.makeText(Home.this, "Finishing KMs required!",
                                     Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(Home.this, "Uploading!",
-                                    Toast.LENGTH_SHORT).show();
-                            //TODO call the method that saves and uploads everything to the database!
-                            alertDialog.dismiss();
-                            Home.this.finish();
+                            try {
+                                miles = Double.parseDouble(kms.getText().toString());
+                                Toast.makeText(Home.this, "Uploading!",
+                                        Toast.LENGTH_SHORT).show();
+                                alertDialog.dismiss();
+                                saveToFile();
+                                Uploader send = new Uploader(Home.this);
+                                send.upload();
+                                Home.this.finish();
+                            } catch (Exception e) {
+                                Toast.makeText(Home.this, "End kilometers must be a number! " + e,
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });
@@ -243,6 +294,102 @@ public class Home extends Activity{
             Toast.makeText(Home.this,
                     "No events to display!",
                     Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void saveToFile() {
+        Date currentTime = Calendar.getInstance().getTime();
+        String tableID = createID(currentTime);
+        saveToEvent(tableID);
+        saveToLogEvent(tableID);
+        saveToTimeLoc(tableID, currentTime);
+    }
+
+    private void saveToEvent(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Event.txt");
+        String blank = " ";
+        String[] data = {id, id, blank, id, blank, blank, blank, blank, blank, blank,
+                blank, blank, Integer.toString(0)};
+        save(file, data);
+    }
+
+    private void saveToLogEvent(String id) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/LogEvent.txt");
+        String[] data = {id, Double.toString(miles)};
+        save(file, data);
+    }
+
+    private void saveToTimeLoc(String id, Date time) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/TImeLoc.txt");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION);
+            askForPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION);
+        }
+        Location loc = manage.getLastKnownLocation(LocationManager.NETWORK_PROVIDER.toString());
+        ArrayList locList = calLoc(loc);
+        String[] data = {id, locList.get(0).toString(), locList.get(1).toString(),
+                android.text.format.DateFormat.format("yyy-MM-dd hh:mm:ss", time).toString()};
+        save(file, data);
+    }
+
+    private ArrayList calLoc(Location location) {
+        ArrayList latLon = new ArrayList();
+        double longitude = location.getLongitude();
+        double latitude = location.getLatitude();
+        latLon.add(longitude);
+        latLon.add(latitude);
+        return latLon;
+    }
+
+    private void askForPermission(String permission, Integer requestCode) {
+        if(ContextCompat.checkSelfPermission(this, permission) !=
+                PackageManager.PERMISSION_GRANTED) {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
+            }
+        }
+    }
+
+    private String createID(Date time) {
+        String id = Integer.toString(time.getMonth()) + Integer.toString(time.getDay())
+                + Integer.toString(time.getYear()) + Integer.toString(time.getHours())
+                + Integer.toString(time.getMinutes()) + Integer.toString(time.getSeconds());
+        return id;
+    }
+
+    private void save(File file, String[] data) {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            for(int i = 0; i < data.length; i++) {
+                fos.write(data[i].getBytes());
+                if(i+1 < data.length) {
+                    fos.write(", ".getBytes());
+                }
+                fos.write("\n".getBytes());
+            }
+            fos.close();
+        } catch (Exception e) {
+            Toast.makeText(this,
+                    "Error: Could not save to file! " + e,
+                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this,
+                    "File info is: " + file.toString(),
+                    Toast.LENGTH_LONG).show();
         }
     }
 
