@@ -41,7 +41,6 @@ public class EditEvent extends Activity{
     private TextView lon;
     private TextView time;
     private EditText desc;
-    private EditText text;
     private EditText policeJobNum;
     private EditText councilJobNum;
     private Spinner spotter;
@@ -59,13 +58,16 @@ public class EditEvent extends Activity{
         policeJobNum.setText("P0");
         councilJobNum = (EditText) findViewById(R.id.councilJobNumTxtField);
         councilJobNum.setText("C:");
+        people = new ArrayList<>();
+        properties = new ArrayList<>();
+        vehicles = new ArrayList<>();
         blob = getBolb(id);
         lat = (TextView) findViewById(R.id.latField);
         lon = (TextView) findViewById(R.id.lonField);
         time = (TextView) findViewById(R.id.timefield);
         getTimeLoc(id);
         desc = (EditText) findViewById(R.id.description);
-        getDescription(id);
+        getNotes();
         spotter = (Spinner) findViewById(R.id.spotterSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(EditEvent.this,
                 android.R.layout.simple_spinner_item,
@@ -102,9 +104,12 @@ public class EditEvent extends Activity{
         submitEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                text = (EditText) findViewById(R.id.description);
                 try {
-                    if (text.toString().isEmpty() == false) {
+                    String temp = desc.getText().toString()
+                            .replaceAll("\n", "<").replaceAll("\r", ">");
+                    if (temp.length() > 0) {
+                        Toast.makeText(EditEvent.this, "Starting to Save!",
+                                Toast.LENGTH_SHORT).show();
                         saveData();
                         closeEvent();
                         Toast.makeText(EditEvent.this, "Event Saved!",
@@ -351,7 +356,7 @@ public class EditEvent extends Activity{
         try {
             for (int i = 0; i < data.length; i += 4) {
                 String check = data[i].toString();
-                String value = id;
+                String value = eventId;
                 if (check.contains(value)) {
                     String latitude = data[i + 1].toString().replaceAll(",", " ");
                     String longitude = data[i + 2].toString().replaceAll(",", " ");
@@ -368,19 +373,19 @@ public class EditEvent extends Activity{
         }
     }
 
-    private void getDescription(String eventId) {
+    private void getNotes() {
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
         File dir = new File(path);
         dir.mkdirs();
-        File file = new File(path, "/Description.txt");
+        File file = new File(path, "/Notes.txt");
         String[] data = load(file);
         try {
             for (int i = 0; i < data.length; i += 2) {
                 String check = data[i].toString();
                 String value = id;
                 if (check.contains(value)) {
-                    String temp = data[i + 1].toString(); //.replaceAll(",", " ");
-                    desc.setText(temp);
+                    String temp = data[i + 1].toString();
+                    getDescription(temp);
                 }
             }
         } catch (Exception e) {
@@ -389,7 +394,27 @@ public class EditEvent extends Activity{
         }
     }
 
-    private int getBolb(String id) {
+    private void getDescription(String eventId) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Description.txt");
+        String[] data = load(file);
+        try {
+            for (int i = 0; i < data.length; i += 2) {
+                String check = data[i].replaceAll(",", "");
+                if (eventId.contains(check)) {
+                    String temp = data[i + 1].replaceAll(",", " ");
+                    desc.setText(temp.replaceAll("<", "\n").replaceAll(">", "\r"));
+                }
+            }
+        } catch (Exception e) {
+            Toast.makeText(EditEvent.this, "Failed getting Event description!",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private int getBolb(String eventId) {
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
         File dir = new File(path);
         dir.mkdirs();
@@ -399,7 +424,7 @@ public class EditEvent extends Activity{
             try {
                 for (int i = 13; i < data.length; i += 13) {
                     String check = data[i].toString();
-                    String value = id;
+                    String value = eventId;
                     if (check.contains(value)) {
                         String pjn = data[i + 10].toString().replaceAll(",", " ");
                         String cjn = data[i + 11].toString().replaceAll(",", " ");
@@ -440,7 +465,8 @@ public class EditEvent extends Activity{
         dir.mkdirs();
         File file = new File(path, "/Description.txt");
         String info = spotter.getSelectedItem().toString() + " - " +
-                cats.getSelectedItem().toString() + " - " + desc.getText().toString() +
+                cats.getSelectedItem().toString() + " - " +
+                desc.getText().toString().replaceAll("\n", "<").replaceAll("\r", ">") +
                 " - " + Calendar.getInstance().getTime().toString() +
                 " - " + Integer.toString(blob);
         String[] data = {id, info + " "};
@@ -454,28 +480,6 @@ public class EditEvent extends Activity{
         File file = new File(path, "/Notes.txt");
         String[] data = {old, id + " "};
         save(file, data);
-    }
-
-    private void save(File file, String[] data) {
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file, true);
-            for(int i = 0; i < data.length; i++) {
-                fos.write(data[i].getBytes());
-                if(i+1 < data.length) {
-                    fos.write(", ".getBytes());
-                }
-                fos.write("\n".getBytes());
-            }
-            fos.close();
-        } catch (Exception e) {
-            Toast.makeText(this,
-                    "Error: Could not save to file! " + e,
-                    Toast.LENGTH_LONG).show();
-            Toast.makeText(this,
-                    "File info is: " + file.toString(),
-                    Toast.LENGTH_LONG).show();
-        }
     }
 
     private void saveToPeople(String id) {
@@ -526,10 +530,12 @@ public class EditEvent extends Activity{
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/Vehicle.txt");
-        for(Vehicle temp : vehicles) {
-            String[] data = {temp.getId(), temp.getlPlate(), temp.getColor(), temp.getMake(),
-                    temp.getModel(), temp.getYear(), temp.getCarClass() + " "};
-            save(file, data);
+        if(vehicles.isEmpty() == false) {
+            for (Vehicle temp : vehicles) {
+                String[] data = {temp.getId(), temp.getlPlate(), temp.getColor(), temp.getMake(),
+                        temp.getModel(), temp.getYear(), temp.getCarClass() + " "};
+                save(file, data);
+            }
         }
     }
 
@@ -541,6 +547,28 @@ public class EditEvent extends Activity{
         for(Vehicle temp : vehicles) {
             String[] data = {id, temp.getId() + " "};
             save(file, data);
+        }
+    }
+
+    private void save(File file, String[] data) {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file, true);
+            for(int i = 0; i < data.length; i++) {
+                fos.write(data[i].getBytes());
+                if(i+1 < data.length) {
+                    fos.write(", ".getBytes());
+                }
+                fos.write("\n".getBytes());
+            }
+            fos.close();
+        } catch (Exception e) {
+            Toast.makeText(this,
+                    "Error: Could not save to file! " + e,
+                    Toast.LENGTH_LONG).show();
+            Toast.makeText(this,
+                    "File info is: " + file.toString(),
+                    Toast.LENGTH_LONG).show();
         }
     }
 

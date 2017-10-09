@@ -475,12 +475,4 @@ public class SignIn extends AppCompatActivity {
         latLon.add(latitude);
         return latLon;
     }
-
-    private ArrayList createIds() {
-        ArrayList ids = new ArrayList();
-        for(int i = 1; i < 11; i++) {
-            ids.add(Integer.toString(i));
-        }
-        return  ids;
-    }
 }

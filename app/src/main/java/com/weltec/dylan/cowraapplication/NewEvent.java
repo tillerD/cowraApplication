@@ -118,7 +118,7 @@ public class NewEvent extends Activity {
             public void onClick(View v) {
                 text = (EditText) findViewById(R.id.description);
                 try {
-                    if (text.toString().isEmpty() == false) {
+                    if (text.getText().toString().isEmpty() == false) {
                         saveData();
                         closeEvent();
                         Toast.makeText(NewEvent.this, "Event Saved!",
@@ -421,7 +421,8 @@ public class NewEvent extends Activity {
             catt = cats.getSelectedItem().toString().replaceAll("-", " ");
         }
         String desc = spotter.getSelectedItem().toString() + " - " +
-                catt + " - " + text.getText().toString();
+                catt + " - " +
+                text.getText().toString().replaceAll("\n", "<").replaceAll("\r", ">");
         String[] data = {id, desc + " "};
         save(file, data);
     }
@@ -493,10 +494,12 @@ public class NewEvent extends Activity {
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/Vehicle.txt");
-        for(Vehicle temp : vehicles) {
-            String[] data = {temp.getId(), temp.getlPlate(), temp.getColor(), temp.getMake(),
-                    temp.getModel(), temp.getYear(), temp.getCarClass() + " "};
-            save(file, data);
+        if(vehicles.isEmpty() == false) {
+            for (Vehicle temp : vehicles) {
+                String[] data = {temp.getId(), temp.getlPlate(), temp.getColor(), temp.getMake(),
+                        temp.getModel(), temp.getYear(), temp.getCarClass() + " "};
+                save(file, data);
+            }
         }
     }
 
