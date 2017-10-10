@@ -391,7 +391,7 @@ public class Home extends Activity{
     private void save(File file, String[] data) {
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(file);
+            fos = new FileOutputStream(file, true);
             for(int i = 0; i < data.length; i++) {
                 fos.write(data[i].getBytes());
                 if(i+1 < data.length) {
