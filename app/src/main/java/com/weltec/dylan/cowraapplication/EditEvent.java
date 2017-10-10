@@ -405,7 +405,7 @@ public class EditEvent extends Activity{
                 String check = data[i].replaceAll(",", "");
                 if (eventId.contains(check)) {
                     String temp = data[i + 1].replaceAll(",", " ");
-                    desc.setText(temp.replaceAll("<", "\n").replaceAll(">", "\r"));
+                    desc.setText(temp.replaceAll("<br>", "\n").replaceAll(">", "\r"));
                 }
             }
         } catch (Exception e) {
@@ -466,7 +466,7 @@ public class EditEvent extends Activity{
         File file = new File(path, "/Description.txt");
         String info = spotter.getSelectedItem().toString() + " - " +
                 cats.getSelectedItem().toString() + " - " +
-                desc.getText().toString().replaceAll("\n", "<").replaceAll("\r", ">") +
+                desc.getText().toString().replaceAll("\n", "<br>").replaceAll("\r", ">") +
                 " - " + Calendar.getInstance().getTime().toString() +
                 " - " + Integer.toString(blob);
         String[] data = {id, info + " "};
@@ -516,7 +516,8 @@ public class EditEvent extends Activity{
             dir.mkdirs();
             File file = new File(path, "/Public.txt");
             for(People temp : people) {
-                String[] data = {temp.getId(), temp.getDescription() + " "};
+                String[] data = {temp.getId(),
+                        temp.getDescription().replaceAll("\n", "<br>").replaceAll("\r", ">") + " "};
                 if(temp.getBlob() == 1) {
                     blob++;
                 }

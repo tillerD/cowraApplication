@@ -422,7 +422,7 @@ public class NewEvent extends Activity {
         }
         String desc = spotter.getSelectedItem().toString() + " - " +
                 catt + " - " +
-                text.getText().toString().replaceAll("\n", "<").replaceAll("\r", ">");
+                text.getText().toString().replaceAll("\n", "<br>").replaceAll("\r", ">");
         String[] data = {id, desc + " "};
         save(file, data);
     }
@@ -470,7 +470,8 @@ public class NewEvent extends Activity {
             dir.mkdirs();
             File file = new File(path, "/Public.txt");
             for(People temp : people) {
-                String[] data = {temp.getId(), temp.getDescription() + " "};
+                String[] data = {temp.getId(),
+                        temp.getDescription().replaceAll("\n", "<br>").replaceAll("\r", ">") + " "};
                 if(temp.getBlob() == 1) {
                     blob++;
                 }
