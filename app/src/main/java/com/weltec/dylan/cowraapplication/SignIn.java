@@ -174,11 +174,7 @@ public class SignIn extends AppCompatActivity {
                         Intent intent = new Intent(SignIn.this, Home.class);
                         intent.putExtra("POLICE", policeNum.getText().toString());
                         intent.putExtra("LIST", (Serializable) patrolers);
-//                        driver.setText("");
-//                        observer.setText("");
-//                        observer2.setText("");
-//                        policeNum.setText("P0");
-//                        patrolers.clear();
+                        intent.putExtra("KMS", kms.getText().toString());
                         startActivity(intent);
                     }
                 });

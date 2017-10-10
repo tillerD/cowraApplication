@@ -44,6 +44,7 @@ public class Home extends Activity{
 
     private String policeNum;
     private double miles;
+    private double begin;
     private List patrolers;
     private List events;
     private TextView polNum;
@@ -59,6 +60,7 @@ public class Home extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.end_patrol);
         miles = 0;
+        begin = 0;
         try {
             policeNum = getIntent().getStringExtra("POLICE");
         } catch(Exception e) {
@@ -71,6 +73,13 @@ public class Home extends Activity{
         } catch (Exception e) {
             Toast.makeText(Home.this,
                     "Patrolers unable to be retrieved!",
+                    Toast.LENGTH_LONG).show();
+        }
+        try {
+            begin = Double.valueOf(getIntent().getStringExtra("KMS"));
+        } catch (Exception e) {
+            Toast.makeText(Home.this,
+                    "Starting KMS unable to be retrieved!",
                     Toast.LENGTH_LONG).show();
         }
         polNum = (TextView) findViewById(R.id.curPoliceNum);
@@ -217,17 +226,25 @@ public class Home extends Activity{
                             Toast.makeText(Home.this, "Finishing KMs required!",
                                     Toast.LENGTH_SHORT).show();
                         } else {
-                            try {
-                                miles = Double.parseDouble(kms.getText().toString());
-                                Toast.makeText(Home.this, "Uploading!",
-                                        Toast.LENGTH_SHORT).show();
-                                alertDialog.dismiss();
-                                saveToFile();
-                                Uploader send = new Uploader(Home.this);
-                                send.upload();
-                                Home.this.finish();
-                            } catch (Exception e) {
-                                Toast.makeText(Home.this, "End kilometers must be a number! " + e,
+                            if (Double.valueOf(kms.getText().toString()) > begin) {
+                                try {
+                                    miles = Double.parseDouble(kms.getText().toString());
+                                    Toast.makeText(Home.this, "Uploading!",
+                                            Toast.LENGTH_SHORT).show();
+                                    alertDialog.dismiss();
+                                    saveToFile();
+                                    Uploader send = new Uploader(Home.this);
+                                    if (send.upload()) {
+                                        Home.this.finish();
+                                    }
+                                } catch (Exception e) {
+                                    Toast.makeText(Home.this,
+                                            "End kilometers must be a number! " + e,
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(Home.this,
+                                        "Finishing KMs must be greater than the Start KMS!",
                                         Toast.LENGTH_SHORT).show();
                             }
                         }
