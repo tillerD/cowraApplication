@@ -297,7 +297,7 @@ public class SignIn extends AppCompatActivity {
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/Event.txt");
-        String blank = " ";
+        String blank = "NULL";
         String[] data = {id, id, id, id, blank, blank, blank, blank, blank, id,
                 policeNum.getText().toString(), blank, Integer.toString(1)};
         save(file, data);

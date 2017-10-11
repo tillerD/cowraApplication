@@ -520,11 +520,11 @@ public class NewEvent extends Activity {
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/Event.txt");
-        String blank = " ";
-        String veh = " ";
-        String will = " ";
-        String prop = " ";
-        String pep = " ";
+        String blank = "NULL";
+        String veh = "NULL";
+        String will = "NULL";
+        String prop = "NULL";
+        String pep = "NULL";
         if(vehicles.isEmpty() == false) {veh = id;}
         if(cats.getSelectedItem().toString().equals("--Wilful Damage--")) {
             will = Integer.toString(1);}

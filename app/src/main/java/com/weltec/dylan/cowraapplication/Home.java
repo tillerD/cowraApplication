@@ -327,7 +327,7 @@ public class Home extends Activity{
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/Event.txt");
-        String blank = " ";
+        String blank = "NULL";
         String[] data = {id, id, blank, id, blank, blank, blank, blank, blank, blank,
                 blank, blank, Integer.toString(0)};
         save(file, data);

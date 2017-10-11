@@ -35,7 +35,7 @@ public class EditEvent extends Activity{
     private String id;
     private int blob;
     private ArrayList<People> people;
-    private ArrayList<PropDetails> properties;
+    //private ArrayList<PropDetails> properties;
     private ArrayList<Vehicle> vehicles;
     private TextView lat;
     private TextView lon;
@@ -59,7 +59,7 @@ public class EditEvent extends Activity{
         councilJobNum = (EditText) findViewById(R.id.councilJobNumTxtField);
         councilJobNum.setText("C:");
         people = new ArrayList<>();
-        properties = new ArrayList<>();
+        //properties = new ArrayList<>();
         vehicles = new ArrayList<>();
         blob = getBolb(id);
         lat = (TextView) findViewById(R.id.latField);
@@ -89,12 +89,13 @@ public class EditEvent extends Activity{
             }
         });
         Button propBtn = (Button) findViewById(R.id.PropertyBtn);
-        propBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                propertyPopUp(v);
-            }
-        });
+        propBtn.setEnabled(false);
+//        propBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                propertyPopUp(v);
+//            }
+//        });
         Button vehBtn = (Button) findViewById(R.id.VehicleBtn);
         vehBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,88 +182,88 @@ public class EditEvent extends Activity{
                 });
     }
 
-    //Property popup window
-    private void propertyPopUp(View v) {
-        final AlertDialog.Builder alert = new AlertDialog.Builder(EditEvent.this);
-        //Create edit fields for the pop up window
-        LinearLayout layout = new LinearLayout(EditEvent.this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        TextView house = new TextView(EditEvent.this);
-        house.setText("House Number:");
-        final EditText num = new EditText(EditEvent.this);
-        num.setHint("e.g 163");
-        TextView street = new TextView(EditEvent.this);
-        street.setText("Street:");
-        final EditText add1 = new EditText(EditEvent.this);
-        add1.setHint("e.g Kent Tce");
-        TextView sub = new TextView(EditEvent.this);
-        sub.setText("Suburb:");
-        final EditText suburb = new EditText(EditEvent.this);
-        suburb.setHint("e.g Te Aro");
-        TextView city = new TextView(EditEvent.this);
-        city.setText("City:");
-        final EditText add2 = new EditText(EditEvent.this);
-        add2.setHint("e.g Wellington");
-        final CheckBox burglary = new CheckBox(EditEvent.this);
-        final CheckBox noise = new CheckBox(EditEvent.this);
-        burglary.setText("Burglary");
-        noise.setText("Noise");
-        layout.addView(house);
-        layout.addView(num);
-        layout.addView(street);
-        layout.addView(add1);
-        layout.addView(sub);
-        layout.addView(suburb);
-        layout.addView(city);
-        layout.addView(add2);
-        layout.addView(burglary);
-        layout.addView(noise);
-        //Set the layout of the popup window
-        alert.setTitle("Property Details")
-                .setCancelable(false)
-                .setView(layout)
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                    }
-                });
-        final AlertDialog alertDialog = alert.create();
-        alertDialog.show();
-        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                .setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int n, b;
-                        if(noise.isChecked()) {
-                            n = 1;
-                        } else {
-                            n = 0;
-                        }
-                        if(burglary.isChecked()) {
-                            b = 1;
-                        } else {
-                            b = 0;
-                        }
-                        if(num.getText().length() > 0
-                                && add1.getText().length() > 0
-                                && suburb.getText().length() > 0
-                                && add2.getText().length() > 0) {
-                            PropDetails temp = new PropDetails(Integer.parseInt(num.getText().toString()),
-                                    add1.getText().toString(),
-                                    suburb.getText().toString(),
-                                    add2.getText().toString(),
-                                    n, b);
-                            properties.add(temp);
-                            Toast.makeText(EditEvent.this, "Property Details saved!",
-                                    Toast.LENGTH_SHORT).show();
-                            alertDialog.dismiss();
-                        } else {
-                            Toast.makeText(EditEvent.this, "All fields are Required!",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
+//    //Property popup window
+//    private void propertyPopUp(View v) {
+//        final AlertDialog.Builder alert = new AlertDialog.Builder(EditEvent.this);
+//        //Create edit fields for the pop up window
+//        LinearLayout layout = new LinearLayout(EditEvent.this);
+//        layout.setOrientation(LinearLayout.VERTICAL);
+//        TextView house = new TextView(EditEvent.this);
+//        house.setText("House Number:");
+//        final EditText num = new EditText(EditEvent.this);
+//        num.setHint("e.g 163");
+//        TextView street = new TextView(EditEvent.this);
+//        street.setText("Street:");
+//        final EditText add1 = new EditText(EditEvent.this);
+//        add1.setHint("e.g Kent Tce");
+//        TextView sub = new TextView(EditEvent.this);
+//        sub.setText("Suburb:");
+//        final EditText suburb = new EditText(EditEvent.this);
+//        suburb.setHint("e.g Te Aro");
+//        TextView city = new TextView(EditEvent.this);
+//        city.setText("City:");
+//        final EditText add2 = new EditText(EditEvent.this);
+//        add2.setHint("e.g Wellington");
+//        final CheckBox burglary = new CheckBox(EditEvent.this);
+//        final CheckBox noise = new CheckBox(EditEvent.this);
+//        burglary.setText("Burglary");
+//        noise.setText("Noise");
+//        layout.addView(house);
+//        layout.addView(num);
+//        layout.addView(street);
+//        layout.addView(add1);
+//        layout.addView(sub);
+//        layout.addView(suburb);
+//        layout.addView(city);
+//        layout.addView(add2);
+//        layout.addView(burglary);
+//        layout.addView(noise);
+//        //Set the layout of the popup window
+//        alert.setTitle("Property Details")
+//                .setCancelable(false)
+//                .setView(layout)
+//                .setNegativeButton("Cancel", null)
+//                .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                    }
+//                });
+//        final AlertDialog alertDialog = alert.create();
+//        alertDialog.show();
+//        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+//                .setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        int n, b;
+//                        if(noise.isChecked()) {
+//                            n = 1;
+//                        } else {
+//                            n = 0;
+//                        }
+//                        if(burglary.isChecked()) {
+//                            b = 1;
+//                        } else {
+//                            b = 0;
+//                        }
+//                        if(num.getText().length() > 0
+//                                && add1.getText().length() > 0
+//                                && suburb.getText().length() > 0
+//                                && add2.getText().length() > 0) {
+//                            PropDetails temp = new PropDetails(Integer.parseInt(num.getText().toString()),
+//                                    add1.getText().toString(),
+//                                    suburb.getText().toString(),
+//                                    add2.getText().toString(),
+//                                    n, b);
+//                            properties.add(temp);
+//                            Toast.makeText(EditEvent.this, "Property Details saved!",
+//                                    Toast.LENGTH_SHORT).show();
+//                            alertDialog.dismiss();
+//                        } else {
+//                            Toast.makeText(EditEvent.this, "All fields are Required!",
+//                                    Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                });
+//    }
 
     //vehicle button popup
     private void vehiclePopUp(View v) {
@@ -453,7 +454,7 @@ public class EditEvent extends Activity{
         saveToDescription(newID);
         saveToNotes(oldID, newID);
         saveToPeople(oldID);
-        saveToProperty(oldID);
+//        saveToProperty(oldID);
         saveToPublic();
         saveToVehicle();
         saveToVehicleComp(oldID);
@@ -495,19 +496,19 @@ public class EditEvent extends Activity{
         }
     }
 
-    private void saveToProperty(String id) {
-        if(properties.isEmpty() == false) {
-            PropDetails temp = properties.get(0);
-            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
-            File dir = new File(path);
-            dir.mkdirs();
-            File file = new File(path, "/Property.txt");
-            String[] data = {id, Integer.toString(temp.getNumber()), temp.getStreet(),
-                    temp.getSuburb(), temp.getCity(), Integer.toString(temp.getNoise()),
-                    Integer.toString(temp.getBulglary()) + " "};
-            save(file, data);
-        }
-    }
+//    private void saveToProperty(String id) {
+//        if(properties.isEmpty() == false) {
+//            PropDetails temp = properties.get(0);
+//            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+//            File dir = new File(path);
+//            dir.mkdirs();
+//            File file = new File(path, "/Property.txt");
+//            String[] data = {id, Integer.toString(temp.getNumber()), temp.getStreet(),
+//                    temp.getSuburb(), temp.getCity(), Integer.toString(temp.getNoise()),
+//                    Integer.toString(temp.getBulglary()) + " "};
+//            save(file, data);
+//        }
+//    }
 
     private void saveToPublic() {
         if(people.isEmpty() == false) {
