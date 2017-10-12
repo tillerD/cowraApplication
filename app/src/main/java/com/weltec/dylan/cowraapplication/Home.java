@@ -260,6 +260,7 @@ public class Home extends Activity{
             rb[i] = new RadioButton(this);
             rb[i].setText(events.get(i).toString());
             rb[i].setId(i);
+            rb[i].setTextAppearance(this, android.R.style.TextAppearance_DeviceDefault_Medium);
             group.addView(rb[i]);
         }
     }

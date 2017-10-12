@@ -272,7 +272,7 @@
         android:hint="Event Description"
         android:inputType=""
         android:text=""
-        android:textSize="14dp"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.943"
         app:layout_constraintLeft_toLeftOf="parent"

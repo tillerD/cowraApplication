@@ -1,7 +1,6 @@
 package com.weltec.dylan.cowraapplication;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
@@ -105,19 +104,17 @@ public class EditEvent extends Activity{
             @Override
             public void onClick(View v) {
                 try {
+                    if (desc.length() <= 0) {
+                        desc.setText("");
+                    }
                     String temp = desc.getText().toString()
                             .replaceAll("\n", "<").replaceAll("\r", ">");
-                    if (temp.length() > 0) {
-                        Toast.makeText(EditEvent.this, "Starting to Save!",
-                                Toast.LENGTH_SHORT).show();
-                        saveData();
-                        closeEvent();
-                        Toast.makeText(EditEvent.this, "Event Saved!",
-                                Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(EditEvent.this, "Description field must be filled!",
-                                Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(EditEvent.this, "Starting to Save!",
+                            Toast.LENGTH_SHORT).show();
+                    saveData();
+                    closeEvent();
+                    Toast.makeText(EditEvent.this, "Event Saved!",
+                            Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Toast.makeText(EditEvent.this, "Error saving data: " + e,
                             Toast.LENGTH_SHORT).show();
@@ -135,7 +132,8 @@ public class EditEvent extends Activity{
 
     //Public popup window
     private void publicPopUp(View v) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(EditEvent.this);
+        android.support.v7.app.AlertDialog.Builder alert =
+                new android.support.v7.app.AlertDialog.Builder(EditEvent.this);
         //Create edit fields for the pop up window
         LinearLayout layout = new LinearLayout(EditEvent.this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -158,41 +156,39 @@ public class EditEvent extends Activity{
                     public void onClick(DialogInterface dialog, int id) {
                     }
                 });
-        final AlertDialog alertDialog = alert.create();
+        final android.support.v7.app.AlertDialog alertDialog = alert.create();
         alertDialog.show();
-        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        alertDialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (desc.length() <= 0) {
-                            Toast.makeText(EditEvent.this, "Description Field empty!",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            String id = createID(Calendar.getInstance().getTime());
-                            if(num.length() > 0) {
-                                try {
-                                    People temp = new People(id, desc.getText().toString(),
-                                            Integer.valueOf(num.getText().toString()));
-                                    people.add(temp);
-                                } catch (Exception e) {
-                                    People temp = new People(id, desc.getText().toString(), 0);
-                                    people.add(temp);
-                                }
-                            } else {
+                            desc.setText("");
+                        }
+                        String id = createID(Calendar.getInstance().getTime());
+                        if(num.length() > 0) {
+                            try {
+                                People temp = new People(id, desc.getText().toString(),
+                                        Integer.valueOf(num.getText().toString()));
+                                people.add(temp);
+                            } catch (Exception e) {
                                 People temp = new People(id, desc.getText().toString(), 0);
                                 people.add(temp);
                             }
-                            Toast.makeText(EditEvent.this, "Person Description added!",
-                                    Toast.LENGTH_SHORT).show();
-                            alertDialog.dismiss();
+                        } else {
+                            People temp = new People(id, desc.getText().toString(), 0);
+                            people.add(temp);
                         }
+                        Toast.makeText(EditEvent.this, "Person Description added!",
+                                Toast.LENGTH_SHORT).show();
+                        alertDialog.dismiss();
                     }
                 });
     }
 
-//    //Property popup window
+    //Property popup window
 //    private void propertyPopUp(View v) {
-//        final AlertDialog.Builder alert = new AlertDialog.Builder(EditEvent.this);
+//        final android.support.v7.app.AlertDialog.Builder alert = new android.support.v7.app.AlertDialog.Builder(NewEvent.this);
 //        //Create edit fields for the pop up window
 //        LinearLayout layout = new LinearLayout(EditEvent.this);
 //        layout.setOrientation(LinearLayout.VERTICAL);
@@ -211,7 +207,7 @@ public class EditEvent extends Activity{
 //        TextView city = new TextView(EditEvent.this);
 //        city.setText("City:");
 //        final EditText add2 = new EditText(EditEvent.this);
-//        add2.setHint("e.g Wellington");
+//        add2.setText("Wellington");
 //        final CheckBox burglary = new CheckBox(EditEvent.this);
 //        final CheckBox noise = new CheckBox(EditEvent.this);
 //        burglary.setText("Burglary");
@@ -235,47 +231,52 @@ public class EditEvent extends Activity{
 //                    public void onClick(DialogInterface dialog, int id) {
 //                    }
 //                });
-//        final AlertDialog alertDialog = alert.create();
+//        final android.support.v7.app.AlertDialog alertDialog = alert.create();
 //        alertDialog.show();
-//        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+//        alertDialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE)
 //                .setOnClickListener(new View.OnClickListener() {
 //                    @Override
 //                    public void onClick(View v) {
 //                        int n, b;
-//                        if(noise.isChecked()) {
+//                        if (noise.isChecked()) {
 //                            n = 1;
 //                        } else {
 //                            n = 0;
 //                        }
-//                        if(burglary.isChecked()) {
+//                        if (burglary.isChecked()) {
 //                            b = 1;
 //                        } else {
 //                            b = 0;
 //                        }
-//                        if(num.getText().length() > 0
-//                                && add1.getText().length() > 0
-//                                && suburb.getText().length() > 0
-//                                && add2.getText().length() > 0) {
-//                            PropDetails temp = new PropDetails(Integer.parseInt(num.getText().toString()),
-//                                    add1.getText().toString(),
-//                                    suburb.getText().toString(),
-//                                    add2.getText().toString(),
-//                                    n, b);
-//                            properties.add(temp);
-//                            Toast.makeText(EditEvent.this, "Property Details saved!",
-//                                    Toast.LENGTH_SHORT).show();
-//                            alertDialog.dismiss();
-//                        } else {
-//                            Toast.makeText(EditEvent.this, "All fields are Required!",
-//                                    Toast.LENGTH_SHORT).show();
+//                        if (num.getText().length() <= 0) {
+//                            num.setText("0");
 //                        }
+//                        if (add1.getText().length() <= 0) {
+//                            add1.setText("");
+//                        }
+//                        if (suburb.getText().length() <= 0) {
+//                            suburb.setText("");
+//                        }
+//                        if (add2.getText().length() <= 0) {
+//                            add2.setText("");
+//                        }
+//                        PropDetails temp = new PropDetails(Integer.parseInt(num.getText().toString()),
+//                                add1.getText().toString(),
+//                                suburb.getText().toString(),
+//                                add2.getText().toString(),
+//                                n, b);
+//                        properties.add(temp);
+//                        Toast.makeText(NewEvent.this, "Property Details saved!",
+//                                Toast.LENGTH_SHORT).show();
+//                        alertDialog.dismiss();
 //                    }
 //                });
 //    }
 
     //vehicle button popup
     private void vehiclePopUp(View v) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(EditEvent.this);
+        android.support.v7.app.AlertDialog.Builder alert =
+                new android.support.v7.app.AlertDialog.Builder(EditEvent.this);
         LinearLayout layout = new LinearLayout(EditEvent.this);
         layout.setOrientation(LinearLayout.VERTICAL);
         final TextView lP = new TextView(EditEvent.this);
@@ -323,28 +324,39 @@ public class EditEvent extends Activity{
 
                     }
                 });
-        final AlertDialog alertDialog = alert.create();
+        final android.support.v7.app.AlertDialog alertDialog = alert.create();
         alertDialog.show();
-        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        alertDialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (plate.length() <= 0 && make.length() <= 0 &&
-                                model.length() <= 0 && color.length() <= 0 &&
-                                year.length() <= 0 && cls.length() <= 0) {
-                            Toast.makeText(EditEvent.this, "Fields can not be empty!",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            String id = createID(Calendar.getInstance().getTime());
-                            Vehicle temp = new Vehicle(plate.getText().toString(),
-                                    make.getText().toString(), model.getText().toString(),
-                                    color.getText().toString(), year.getText().toString(),
-                                    cls.getText().toString(), id);
-                            vehicles.add(temp);
-                            Toast.makeText(EditEvent.this, "Vehicle Information added!",
-                                    Toast.LENGTH_SHORT).show();
-                            alertDialog.dismiss();
+                        if (plate.length() <= 0) {
+                            plate.setText("");
                         }
+                        if (make.length() <= 0) {
+                            make.setText("");
+                        }
+                        if (model.length() <= 0) {
+                            model.setText("");
+                        }
+                        if (color.length() <= 0) {
+                            color.setText("");
+                        }
+                        if (year.length() <= 0) {
+                            year.setText("");
+                        }
+                        if (cls.length() <= 0) {
+                            cls.setText("");
+                        }
+                        String id = createID(Calendar.getInstance().getTime());
+                        Vehicle temp = new Vehicle(plate.getText().toString(),
+                                make.getText().toString(), model.getText().toString(),
+                                color.getText().toString(), year.getText().toString(),
+                                cls.getText().toString(), id);
+                        vehicles.add(temp);
+                        Toast.makeText(EditEvent.this, "Vehicle Information added!",
+                                Toast.LENGTH_SHORT).show();
+                        alertDialog.dismiss();
                     }
                 });
     }
@@ -371,8 +383,8 @@ public class EditEvent extends Activity{
                     String longitude = data[i + 2].toString().replaceAll(",", " ");
                     String ticToc = data[i + 3].toString().replaceAll(",", " ");
                     String[] justTime = ticToc.split("-|\\ |\\:");
-                    lat.setText(latitude);
-                    lon.setText(longitude);
+                    lat.setText("Lat: " + latitude);
+                    lon.setText("Lon: " + longitude);
                     time.setText(justTime[3].toString() + ":" + justTime[4].toString());
                 }
             }
@@ -459,11 +471,11 @@ public class EditEvent extends Activity{
     private void saveData() {
         String oldID = id;
         String newID = createID(Calendar.getInstance().getTime());;
-        saveToDescription(newID);
         saveToNotes(oldID, newID);
         saveToPeople(oldID);
 //        saveToProperty(oldID);
         saveToPublic();
+        saveToDescription(newID);
         saveToVehicle();
         saveToVehicleComp(oldID);
     }
@@ -477,7 +489,7 @@ public class EditEvent extends Activity{
                 cats.getSelectedItem().toString() + " - " +
                 desc.getText().toString().replaceAll("\n", "<br>").replaceAll("\r", ">") +
                 " - " + Calendar.getInstance().getTime().toString() +
-                " - " + Integer.toString(blob);
+                " - BOLBs: " + Integer.toString(blob);
         String[] data = {id, info + " "};
         save(file, data);
     }
@@ -527,8 +539,8 @@ public class EditEvent extends Activity{
             for(People temp : people) {
                 String[] data = {temp.getId(),
                         temp.getDescription().replaceAll("\n", "<br>").replaceAll("\r", ">") + " "};
-                if(temp.getBlob() == 1) {
-                    blob++;
+                if(temp.getBlob() > 0) {
+                    blob += temp.getBlob();
                 }
                 save(file, data);
             }

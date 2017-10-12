@@ -36,41 +36,22 @@
 
     <TextView
         android:id="@+id/Observer1Label"
-        android:layout_width="255dp"
-        android:layout_height="45dp"
-        android:textSize="32dp"
-        android:text="Observer 1 Name"
+        android:layout_width="373dp"
+        android:layout_height="47dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.067"
-        app:layout_constraintTop_toTopOf="@+id/guideline"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="177dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintVertical_bias="0.13"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
-
-    <TextView
-        android:id="@+id/Observer2Label"
-        android:layout_width="250dp"
-        android:layout_height="45dp"
+        android:text="Primary Observer Name"
         android:textSize="32dp"
-        android:text="Observer 2 Name"
-        android:layout_marginRight="16dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.067"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="329dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintVertical_bias="0.19"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        app:layout_constraintHorizontal_bias="0.067"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+        app:layout_constraintVertical_bias="0.13" />
 
     <TextView
         android:id="@+id/VecStartLabel"
@@ -139,21 +120,6 @@
         app:layout_constraintVertical_bias="0.479" />
 
     <EditText
-        android:id="@+id/ob2NameField"
-        android:layout_width="229dp"
-        android:layout_height="48dp"
-        android:ems="10"
-        android:textSize="20dp"
-        android:inputType="textPersonName"
-        android:text=""
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.078"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.692" />
-
-    <EditText
         android:id="@+id/vecStartField"
         android:layout_width="233dp"
         android:layout_height="48dp"
@@ -192,7 +158,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.83"
+        app:layout_constraintVertical_bias="0.715"
         app:layout_constraintHorizontal_bias="0.479" />
 
     <Button
@@ -205,7 +171,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.804" />
+        app:layout_constraintVertical_bias="0.695" />
 
     <TextView
         android:id="@+id/patrolInfo"

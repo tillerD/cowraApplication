@@ -40,7 +40,6 @@ public class SignIn extends AppCompatActivity {
     private List patrolers;
     private EditText driver;
     private EditText observer;
-    private EditText observer2;
     private EditText policeNum;
     private EditText kms;
     private String result;
@@ -61,7 +60,6 @@ public class SignIn extends AppCompatActivity {
         patrolers = new ArrayList<String>();
         driver = (EditText) findViewById(R.id.driverNameField);
         observer = (EditText) findViewById(R.id.ob1NameField);
-        observer2 = (EditText) findViewById(R.id.ob2NameField);
         policeNum = (EditText) findViewById(policeJobNumID);
         policeNum.setText("P0");
         kms = (EditText) findViewById(R.id.vecStartField);
@@ -70,19 +68,13 @@ public class SignIn extends AppCompatActivity {
         addUser.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(observer2.length() > 0) {
-                    if(patrolers.size() < 2) {
-                        patrolerPopUp(v);
-                    } else {
-                        Toast.makeText(SignIn.this,
-                                "Too many patrolers added: max is 5 per vehicle.",
-                                Toast.LENGTH_SHORT).show();
-                    }
+                if(patrolers.size() < 3) {
+                    patrolerPopUp(v);
                 } else {
-                    Toast.makeText(SignIn.this, "Observer 2 field is empty!",
+                    Toast.makeText(SignIn.this,
+                            "Too many patrolers added: max is 5 per vehicle.",
                             Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
         //StartPatrol button listener
@@ -289,7 +281,10 @@ public class SignIn extends AppCompatActivity {
         File file = new File(path, "/Description.txt");
         String desc = " ";
         for( Object temp : patrolers) {
-            desc += temp.toString() + " - ";
+            if(!temp.toString().equals(patrolers.get(0)) ||
+                    !temp.toString().equals(patrolers.get(1))) {
+                desc += temp.toString() + " - ";
+            }
         }
         String[] data = {id, desc};
         save(file, data);
@@ -477,9 +472,6 @@ public class SignIn extends AppCompatActivity {
     private void saveToArray() {
         patrolers.add(0, driver.getText());
         patrolers.add(1, observer.getText());
-        if (observer2.getText().length() > 0) {
-            patrolers.add(2, observer2.getText());
-        }
     }
 
     private String createID(Date time) {
