@@ -63,6 +63,7 @@ public class SignIn extends AppCompatActivity {
         policeNum = (EditText) findViewById(policeJobNumID);
         policeNum.setText("P0");
         kms = (EditText) findViewById(R.id.vecStartField);
+        checkCrashed();
         //AddUser button listener
         Button addUser = (Button) findViewById(R.id.addUser);
         addUser.setOnClickListener(new OnClickListener() {
@@ -272,6 +273,7 @@ public class SignIn extends AppCompatActivity {
         saveToTimeLoc(tableID, currentTime);
         saveToVehicle(tableID);
         saveToVehicleComp(tableID);
+        saveToCrashSave();
     }
 
     private void saveToDescription(String id) {
@@ -395,6 +397,19 @@ public class SignIn extends AppCompatActivity {
         save(file, data);
     }
 
+    private void saveToCrashSave() {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/TempData.txt");
+        String pat = "";
+        for( Object temp : patrolers) {
+            pat += temp.toString() + "-";
+        }
+        String[] data = {pat, policeNum.getText().toString(), kms.getText().toString()};
+        save(file, data);
+    }
+
     private void save(File file, String[] data) {
         FileOutputStream fos = null;
         try {
@@ -414,6 +429,34 @@ public class SignIn extends AppCompatActivity {
             Toast.makeText(this,
                     "File info is: " + file.toString(),
                     Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void checkCrashed() {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Event.txt");
+        String[] data = load(file);
+        boolean crashed = true;
+        for(int i = 4; i < data.length; i+=13) {
+            if(data[i].contains("NULL")) {
+                crashed = false;
+            }
+        }
+        if(crashed) {
+            File crashedFile = new File(path, "/TempData.txt");
+            String[] crashedData = load(crashedFile);
+            String[] temp = crashedData[1].split("-");
+            List patts = new ArrayList<String>();
+            for(String item : temp) {
+                patts.add(item);
+            }
+            Intent intent = new Intent(SignIn.this, Home.class);
+            intent.putExtra("POLICE", crashedData[1]);
+            intent.putExtra("LIST", (Serializable) patts);
+            intent.putExtra("KMS", crashedData[2]);
+            startActivity(intent);
         }
     }
 
