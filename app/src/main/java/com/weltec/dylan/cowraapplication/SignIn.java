@@ -433,30 +433,36 @@ public class SignIn extends AppCompatActivity {
     }
 
     private void checkCrashed() {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
-        File dir = new File(path);
-        dir.mkdirs();
-        File file = new File(path, "/Event.txt");
-        String[] data = load(file);
-        boolean crashed = true;
-        for(int i = 4; i < data.length; i+=13) {
-            if(data[i].contains("NULL")) {
-                crashed = false;
+        try {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+            File dir = new File(path);
+            dir.mkdirs();
+            File file = new File(path, "/Event.txt");
+            String[] data = load(file);
+            boolean crashed = true;
+            for (int i = 4; i < data.length; i += 13) {
+                if (data[i].contains("NULL")) {
+                    crashed = false;
+                }
             }
-        }
-        if(crashed) {
-            File crashedFile = new File(path, "/TempData.txt");
-            String[] crashedData = load(crashedFile);
-            String[] temp = crashedData[1].split("-");
-            List patts = new ArrayList<String>();
-            for(String item : temp) {
-                patts.add(item);
+            if (crashed) {
+                File crashedFile = new File(path, "/TempData.txt");
+                String[] crashedData = load(crashedFile);
+                String[] temp = crashedData[1].split("-");
+                List patts = new ArrayList<String>();
+                for (String item : temp) {
+                    patts.add(item);
+                }
+                Intent intent = new Intent(SignIn.this, Home.class);
+                intent.putExtra("POLICE", crashedData[1]);
+                intent.putExtra("LIST", (Serializable) patts);
+                intent.putExtra("KMS", crashedData[2]);
+                startActivity(intent);
             }
-            Intent intent = new Intent(SignIn.this, Home.class);
-            intent.putExtra("POLICE", crashedData[1]);
-            intent.putExtra("LIST", (Serializable) patts);
-            intent.putExtra("KMS", crashedData[2]);
-            startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(this,
+                    "No files to check: " + e,
+                    Toast.LENGTH_LONG).show();
         }
     }
 
