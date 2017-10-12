@@ -162,26 +162,32 @@ public class EditEvent extends Activity{
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (desc.length() <= 0) {
-                            desc.setText("");
-                        }
-                        String id = createID(Calendar.getInstance().getTime());
-                        if(num.length() > 0) {
-                            try {
-                                People temp = new People(id, desc.getText().toString(),
-                                        Integer.valueOf(num.getText().toString()));
-                                people.add(temp);
-                            } catch (Exception e) {
+                        if(desc.length() > 0 || num.length() > 0) {
+                            if (desc.length() <= 0) {
+                                desc.setText("");
+                            }
+                            String id = createID(Calendar.getInstance().getTime());
+                            if (num.length() > 0) {
+                                try {
+                                    People temp = new People(id, desc.getText().toString(),
+                                            Integer.valueOf(num.getText().toString()));
+                                    people.add(temp);
+                                } catch (Exception e) {
+                                    People temp = new People(id, desc.getText().toString(), 0);
+                                    people.add(temp);
+                                }
+                            } else {
                                 People temp = new People(id, desc.getText().toString(), 0);
                                 people.add(temp);
                             }
+                            Toast.makeText(EditEvent.this, "Person Description added!",
+                                    Toast.LENGTH_SHORT).show();
+                            alertDialog.dismiss();
                         } else {
-                            People temp = new People(id, desc.getText().toString(), 0);
-                            people.add(temp);
+                            Toast.makeText(EditEvent.this,
+                                    "All fields can not be empty!",
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(EditEvent.this, "Person Description added!",
-                                Toast.LENGTH_SHORT).show();
-                        alertDialog.dismiss();
                     }
                 });
     }
@@ -330,33 +336,41 @@ public class EditEvent extends Activity{
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (plate.length() <= 0) {
-                            plate.setText("");
+                        if(plate.length() > 0 || make.length() > 0 || model.length() > 0
+                                || color.length() > 0 || year.length() > 0
+                                || cls.length() > 0) {
+                            if (plate.length() <= 0) {
+                                plate.setText("");
+                            }
+                            if (make.length() <= 0) {
+                                make.setText("");
+                            }
+                            if (model.length() <= 0) {
+                                model.setText("");
+                            }
+                            if (color.length() <= 0) {
+                                color.setText("");
+                            }
+                            if (year.length() <= 0) {
+                                year.setText("");
+                            }
+                            if (cls.length() <= 0) {
+                                cls.setText("");
+                            }
+                            String id = createID(Calendar.getInstance().getTime());
+                            Vehicle temp = new Vehicle(plate.getText().toString(),
+                                    make.getText().toString(), model.getText().toString(),
+                                    color.getText().toString(), year.getText().toString(),
+                                    cls.getText().toString(), id);
+                            vehicles.add(temp);
+                            Toast.makeText(EditEvent.this, "Vehicle Information added!",
+                                    Toast.LENGTH_SHORT).show();
+                            alertDialog.dismiss();
+                        } else {
+                            Toast.makeText(EditEvent.this,
+                                    "All fields can not be empty!",
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        if (make.length() <= 0) {
-                            make.setText("");
-                        }
-                        if (model.length() <= 0) {
-                            model.setText("");
-                        }
-                        if (color.length() <= 0) {
-                            color.setText("");
-                        }
-                        if (year.length() <= 0) {
-                            year.setText("");
-                        }
-                        if (cls.length() <= 0) {
-                            cls.setText("");
-                        }
-                        String id = createID(Calendar.getInstance().getTime());
-                        Vehicle temp = new Vehicle(plate.getText().toString(),
-                                make.getText().toString(), model.getText().toString(),
-                                color.getText().toString(), year.getText().toString(),
-                                cls.getText().toString(), id);
-                        vehicles.add(temp);
-                        Toast.makeText(EditEvent.this, "Vehicle Information added!",
-                                Toast.LENGTH_SHORT).show();
-                        alertDialog.dismiss();
                     }
                 });
     }

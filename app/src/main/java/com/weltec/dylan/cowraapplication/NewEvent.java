@@ -218,26 +218,32 @@ public class NewEvent extends Activity {
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (desc.length() <= 0) {
-                            desc.setText("");
-                        }
-                        String id = createID(Calendar.getInstance().getTime());
-                        if(num.length() > 0) {
-                            try {
-                                People temp = new People(id, desc.getText().toString(),
-                                        Integer.valueOf(num.getText().toString()));
-                                people.add(temp);
-                            } catch (Exception e) {
+                        if(desc.length() > 0 || num.length() > 0) {
+                            if (desc.length() <= 0) {
+                                desc.setText("");
+                            }
+                            String id = createID(Calendar.getInstance().getTime());
+                            if (num.length() > 0) {
+                                try {
+                                    People temp = new People(id, desc.getText().toString(),
+                                            Integer.valueOf(num.getText().toString()));
+                                    people.add(temp);
+                                } catch (Exception e) {
+                                    People temp = new People(id, desc.getText().toString(), 0);
+                                    people.add(temp);
+                                }
+                            } else {
                                 People temp = new People(id, desc.getText().toString(), 0);
                                 people.add(temp);
                             }
+                            Toast.makeText(NewEvent.this, "Person Description added!",
+                                    Toast.LENGTH_SHORT).show();
+                            alertDialog.dismiss();
                         } else {
-                            People temp = new People(id, desc.getText().toString(), 0);
-                            people.add(temp);
+                            Toast.makeText(NewEvent.this,
+                                    "All fields can not be empty!",
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(NewEvent.this, "Person Description added!",
-                                Toast.LENGTH_SHORT).show();
-                        alertDialog.dismiss();
                     }
                 });
     }
@@ -256,7 +262,7 @@ public class NewEvent extends Activity {
         street.setText("Street:");
         final EditText add1 = new EditText(NewEvent.this);
         add1.setHint("e.g Kent Tce");
-        TextView sub = new TextView(NewEvent.this);
+        final TextView sub = new TextView(NewEvent.this);
         sub.setText("Suburb:");
         final EditText suburb = new EditText(NewEvent.this);
         suburb.setHint("e.g Te Aro");
@@ -293,38 +299,45 @@ public class NewEvent extends Activity {
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int n, b;
-                        if (noise.isChecked()) {
-                            n = 1;
+                        if(num.length() > 0 || add1.length() > 0
+                                || suburb.length() > 0 || add2.length() > 0) {
+                            int n, b;
+                            if (noise.isChecked()) {
+                                n = 1;
+                            } else {
+                                n = 0;
+                            }
+                            if (burglary.isChecked()) {
+                                b = 1;
+                            } else {
+                                b = 0;
+                            }
+                            if (num.getText().length() <= 0) {
+                                num.setText("0");
+                            }
+                            if (add1.getText().length() <= 0) {
+                                add1.setText("");
+                            }
+                            if (suburb.getText().length() <= 0) {
+                                suburb.setText("");
+                            }
+                            if (add2.getText().length() <= 0) {
+                                add2.setText("");
+                            }
+                            PropDetails temp = new PropDetails(Integer.parseInt(num.getText().toString()),
+                                    add1.getText().toString(),
+                                    suburb.getText().toString(),
+                                    add2.getText().toString(),
+                                    n, b);
+                            properties.add(temp);
+                            Toast.makeText(NewEvent.this, "Property Details saved!",
+                                    Toast.LENGTH_SHORT).show();
+                            alertDialog.dismiss();
                         } else {
-                            n = 0;
+                            Toast.makeText(NewEvent.this,
+                                    "All fields can not be empty!",
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        if (burglary.isChecked()) {
-                            b = 1;
-                        } else {
-                            b = 0;
-                        }
-                        if (num.getText().length() <= 0) {
-                            num.setText("0");
-                        }
-                        if (add1.getText().length() <= 0) {
-                            add1.setText("");
-                        }
-                        if (suburb.getText().length() <= 0) {
-                            suburb.setText("");
-                        }
-                        if (add2.getText().length() <= 0) {
-                            add2.setText("");
-                        }
-                        PropDetails temp = new PropDetails(Integer.parseInt(num.getText().toString()),
-                                add1.getText().toString(),
-                                suburb.getText().toString(),
-                                add2.getText().toString(),
-                                n, b);
-                        properties.add(temp);
-                        Toast.makeText(NewEvent.this, "Property Details saved!",
-                                Toast.LENGTH_SHORT).show();
-                        alertDialog.dismiss();
                     }
                 });
     }
@@ -385,33 +398,41 @@ public class NewEvent extends Activity {
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (plate.length() <= 0) {
-                            plate.setText("");
+                        if(plate.length() > 0 || make.length() > 0 || model.length() > 0
+                                || color.length() > 0 || year.length() > 0
+                                || cls.length() > 0) {
+                            if (plate.length() <= 0) {
+                                plate.setText("");
+                            }
+                            if (make.length() <= 0) {
+                                make.setText("");
+                            }
+                            if (model.length() <= 0) {
+                                model.setText("");
+                            }
+                            if (color.length() <= 0) {
+                                color.setText("");
+                            }
+                            if (year.length() <= 0) {
+                                year.setText("");
+                            }
+                            if (cls.length() <= 0) {
+                                cls.setText("");
+                            }
+                            String id = createID(Calendar.getInstance().getTime());
+                            Vehicle temp = new Vehicle(plate.getText().toString(),
+                                    make.getText().toString(), model.getText().toString(),
+                                    color.getText().toString(), year.getText().toString(),
+                                    cls.getText().toString(), id);
+                            vehicles.add(temp);
+                            Toast.makeText(NewEvent.this, "Vehicle Information added!",
+                                    Toast.LENGTH_SHORT).show();
+                            alertDialog.dismiss();
+                        } else {
+                            Toast.makeText(NewEvent.this,
+                                    "All fields can not be empty!",
+                                    Toast.LENGTH_SHORT).show();
                         }
-                        if (make.length() <= 0) {
-                            make.setText("");
-                        }
-                        if (model.length() <= 0) {
-                            model.setText("");
-                        }
-                        if (color.length() <= 0) {
-                            color.setText("");
-                        }
-                        if (year.length() <= 0) {
-                            year.setText("");
-                        }
-                        if (cls.length() <= 0) {
-                            cls.setText("");
-                        }
-                        String id = createID(Calendar.getInstance().getTime());
-                        Vehicle temp = new Vehicle(plate.getText().toString(),
-                                make.getText().toString(), model.getText().toString(),
-                                color.getText().toString(), year.getText().toString(),
-                                cls.getText().toString(), id);
-                        vehicles.add(temp);
-                        Toast.makeText(NewEvent.this, "Vehicle Information added!",
-                                Toast.LENGTH_SHORT).show();
-                        alertDialog.dismiss();
                     }
                 });
     }
