@@ -22,8 +22,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -417,6 +420,36 @@ public class SignIn extends AppCompatActivity {
                     "File info is: " + file.toString(),
                     Toast.LENGTH_LONG).show();
         }
+    }
+
+    public static String[] load(File file) {
+        FileInputStream fis = null;
+        String[] array;
+        try
+        {
+            fis = new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            String test;
+            int anzahl=0;
+            while ((test=br.readLine()) != null)
+            {
+                anzahl++;
+            }
+            fis.getChannel().position(0);
+            array = new String[anzahl];
+            String line;
+            int i = 0;
+            while((line=br.readLine())!=null)
+            {
+                array[i] = line;
+                i++;
+            }
+        }
+        catch (Exception e) {
+            array = new String[0];
+        }
+        return array;
     }
 
     private void saveAppend(File file, String[] data) {

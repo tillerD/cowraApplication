@@ -198,10 +198,13 @@ public class NewEvent extends Activity {
         final EditText desc = new EditText(NewEvent.this);
         desc.setHint("Person Description:");
         desc.setHeight(250);
-        final CheckBox box = new CheckBox(NewEvent.this);
-        box.setText("BOLB");
+        TextView bolb = new TextView(NewEvent.this);
+        bolb.setText("B.O.L.B.:");
+        final EditText num = new EditText(NewEvent.this);
+        num.setHint("e.g 12");
         layout.addView(desc);
-        layout.addView(box);
+        layout.addView(bolb);
+        layout.addView(num);
         //Set the layout of the popup window
         alert.setTitle("Public Person Description")
                 .setCancelable(false)
@@ -222,9 +225,15 @@ public class NewEvent extends Activity {
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             String id = createID(Calendar.getInstance().getTime());
-                            if(box.isChecked()) {
-                                People temp = new People(id, desc.getText().toString(), 1);
-                                people.add(temp);
+                            if(num.length() > 0) {
+                                try {
+                                    People temp = new People(id, desc.getText().toString(),
+                                            Integer.valueOf(num.getText().toString()));
+                                    people.add(temp);
+                                } catch (Exception e) {
+                                    People temp = new People(id, desc.getText().toString(), 0);
+                                    people.add(temp);
+                                }
                             } else {
                                 People temp = new People(id, desc.getText().toString(), 0);
                                 people.add(temp);
@@ -258,7 +267,7 @@ public class NewEvent extends Activity {
         TextView city = new TextView(NewEvent.this);
         city.setText("City:");
         final EditText add2 = new EditText(NewEvent.this);
-        add2.setHint("e.g Wellington");
+        add2.setText("Wellington");
         final CheckBox burglary = new CheckBox(NewEvent.this);
         final CheckBox noise = new CheckBox(NewEvent.this);
         burglary.setText("Burglary");

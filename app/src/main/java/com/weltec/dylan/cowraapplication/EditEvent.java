@@ -8,7 +8,6 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -143,10 +142,13 @@ public class EditEvent extends Activity{
         final EditText desc = new EditText(EditEvent.this);
         desc.setHint("Person Description:");
         desc.setHeight(250);
-        final CheckBox box = new CheckBox(EditEvent.this);
-        box.setText("BOLB");
+        TextView bolb = new TextView(EditEvent.this);
+        bolb.setText("B.O.L.B.:");
+        final EditText num = new EditText(EditEvent.this);
+        num.setHint("e.g 12");
         layout.addView(desc);
-        layout.addView(box);
+        layout.addView(bolb);
+        layout.addView(num);
         //Set the layout of the popup window
         alert.setTitle("Public Person Description")
                 .setCancelable(false)
@@ -167,9 +169,15 @@ public class EditEvent extends Activity{
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             String id = createID(Calendar.getInstance().getTime());
-                            if(box.isChecked()) {
-                                People temp = new People(id, desc.getText().toString(), 1);
-                                people.add(temp);
+                            if(num.length() > 0) {
+                                try {
+                                    People temp = new People(id, desc.getText().toString(),
+                                            Integer.valueOf(num.getText().toString()));
+                                    people.add(temp);
+                                } catch (Exception e) {
+                                    People temp = new People(id, desc.getText().toString(), 0);
+                                    people.add(temp);
+                                }
                             } else {
                                 People temp = new People(id, desc.getText().toString(), 0);
                                 people.add(temp);

@@ -41,6 +41,8 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
         this.context = c;
     }
 
+    public BackgroundWorker() {}
+
     @Override
     protected String doInBackground(String[]... params) {
         type = params[0][0];
@@ -133,7 +135,7 @@ public class BackgroundWorker extends AsyncTask<String[], Void, String> {
         super.onProgressUpdate(values);
     }
 
-    private boolean isExternalStorageWritable() {
+    boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             return true;
