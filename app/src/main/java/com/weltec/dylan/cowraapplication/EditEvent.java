@@ -104,7 +104,7 @@ public class EditEvent extends Activity{
             @Override
             public void onClick(View v) {
                 try {
-                    if (desc.length() <= 0) {
+                    if (desc.getText().toString().isEmpty()) {
                         desc.setText("");
                     }
                     String temp = desc.getText().toString()

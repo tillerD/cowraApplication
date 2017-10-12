@@ -118,15 +118,13 @@ public class NewEvent extends Activity {
             public void onClick(View v) {
                 text = (EditText) findViewById(R.id.description);
                 try {
-                    if (text.getText().toString().isEmpty() == false) {
-                        saveData();
-                        closeEvent();
-                        Toast.makeText(NewEvent.this, "Event Saved!",
-                                Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(NewEvent.this, "Description field must be filled!",
-                                Toast.LENGTH_SHORT).show();
+                    if(text.getText().toString().isEmpty()) {
+                        text.setText("");
                     }
+                    saveData();
+                    closeEvent();
+                    Toast.makeText(NewEvent.this, "Event Saved!",
+                            Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Toast.makeText(NewEvent.this, "Error saving data: " + e,
                             Toast.LENGTH_SHORT).show();
