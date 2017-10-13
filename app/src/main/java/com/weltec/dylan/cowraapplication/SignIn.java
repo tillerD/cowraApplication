@@ -439,13 +439,8 @@ public class SignIn extends AppCompatActivity {
             dir.mkdirs();
             File file = new File(path, "/Event.txt");
             String[] data = load(file);
-            boolean crashed = true;
-            for (int i = 4; i < data.length; i += 13) {
-                if (data[i].contains("NULL")) {
-                    crashed = false;
-                }
-            }
-            if (crashed) {
+            int length = data.length;
+            if(data[length-10].contains("NULL") || data[length].contains("1")) {
                 File crashedFile = new File(path, "/TempData.txt");
                 String[] crashedData = load(crashedFile);
                 String[] temp = crashedData[1].split("-");
@@ -453,6 +448,9 @@ public class SignIn extends AppCompatActivity {
                 for (String item : temp) {
                     patts.add(item);
                 }
+                Toast.makeText(this,
+                        "Restarting patrol...",
+                        Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(SignIn.this, Home.class);
                 intent.putExtra("POLICE", crashedData[1]);
                 intent.putExtra("LIST", (Serializable) patts);
