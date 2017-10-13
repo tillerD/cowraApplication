@@ -440,7 +440,8 @@ public class SignIn extends AppCompatActivity {
             File file = new File(path, "/Event.txt");
             String[] data = load(file);
             int length = data.length-1;
-            if(data[length-10].contains("NULL") || data[length].contains("1")) {
+            if((data[length-9].contains("NULL") && data[length].contains("0"))
+                    ||(data[length].contains("1"))){
                 File crashedFile = new File(path, "/TempData.txt");
                 String[] crashedData = load(crashedFile);
                 String[] temp = crashedData[0].split("-");
@@ -449,7 +450,8 @@ public class SignIn extends AppCompatActivity {
                     patts.add(item.replaceAll(",",""));
                 }
                 Toast.makeText(this,
-                        "Restarting patrol...",
+                        "Checking values. LogID is: " + data[length-9] +
+                                " and Active is: " + data[length],
                         Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(SignIn.this, Home.class);
                 intent.putExtra("POLICE", crashedData[1].replaceAll(",",""));
