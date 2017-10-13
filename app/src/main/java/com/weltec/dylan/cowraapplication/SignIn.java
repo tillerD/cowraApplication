@@ -439,22 +439,22 @@ public class SignIn extends AppCompatActivity {
             dir.mkdirs();
             File file = new File(path, "/Event.txt");
             String[] data = load(file);
-            int length = data.length;
+            int length = data.length-1;
             if(data[length-10].contains("NULL") || data[length].contains("1")) {
                 File crashedFile = new File(path, "/TempData.txt");
                 String[] crashedData = load(crashedFile);
-                String[] temp = crashedData[1].split("-");
+                String[] temp = crashedData[0].split("-");
                 List patts = new ArrayList<String>();
                 for (String item : temp) {
-                    patts.add(item);
+                    patts.add(item.replaceAll(",",""));
                 }
                 Toast.makeText(this,
                         "Restarting patrol...",
                         Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(SignIn.this, Home.class);
-                intent.putExtra("POLICE", crashedData[1]);
+                intent.putExtra("POLICE", crashedData[1].replaceAll(",",""));
                 intent.putExtra("LIST", (Serializable) patts);
-                intent.putExtra("KMS", crashedData[2]);
+                intent.putExtra("KMS", crashedData[2].replaceAll(",",""));
                 startActivity(intent);
             }
         } catch (Exception e) {
