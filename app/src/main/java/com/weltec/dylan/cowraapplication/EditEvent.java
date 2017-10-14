@@ -141,7 +141,7 @@ public class EditEvent extends Activity{
         desc.setHint("Person Description:");
         desc.setHeight(250);
         TextView bolb = new TextView(EditEvent.this);
-        bolb.setText("B.O.L.B.:");
+        bolb.setText("Actual B.O.L.B.:");
         final EditText num = new EditText(EditEvent.this);
         num.setHint("e.g 12");
         layout.addView(desc);
@@ -164,13 +164,14 @@ public class EditEvent extends Activity{
                     public void onClick(View v) {
                         if(desc.length() > 0 || num.length() > 0) {
                             if (desc.length() <= 0) {
-                                desc.setText("");
+                                desc.setText("NULL");
                             }
                             String id = createID(Calendar.getInstance().getTime());
                             if (num.length() > 0) {
                                 try {
                                     People temp = new People(id, desc.getText().toString(),
                                             Integer.valueOf(num.getText().toString()));
+                                    blob = Integer.valueOf(num.getText().toString());
                                     people.add(temp);
                                 } catch (Exception e) {
                                     People temp = new People(id, desc.getText().toString(), 0);
@@ -340,22 +341,22 @@ public class EditEvent extends Activity{
                                 || color.length() > 0 || year.length() > 0
                                 || cls.length() > 0) {
                             if (plate.length() <= 0) {
-                                plate.setText("");
+                                plate.setText("NULL");
                             }
                             if (make.length() <= 0) {
-                                make.setText("");
+                                make.setText("NULL");
                             }
                             if (model.length() <= 0) {
-                                model.setText("");
+                                model.setText("NULL");
                             }
                             if (color.length() <= 0) {
-                                color.setText("");
+                                color.setText("NULL");
                             }
                             if (year.length() <= 0) {
-                                year.setText("");
+                                year.setText("NULL");
                             }
                             if (cls.length() <= 0) {
-                                cls.setText("");
+                                cls.setText("NULL");
                             }
                             String id = createID(Calendar.getInstance().getTime());
                             Vehicle temp = new Vehicle(plate.getText().toString(),
@@ -482,6 +483,26 @@ public class EditEvent extends Activity{
         return 0;
     }
 
+    private void updateEvent(String eventId) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Event.txt");
+        String blank = "NULL";
+        String veh = "NULL";
+        String will = "NULL";
+        String prop = "NULL";
+        String pep = "NULL";
+        if(vehicles.isEmpty() == false) {veh = id;}
+        if(cats.getSelectedItem().toString().equals("--Wilful Damage--")) {
+            will = Integer.toString(1);}
+        if(people.isEmpty() == false) {pep = id;}
+        String[] data = {id, id, blank, blank, veh, will, prop, pep, Integer.toString(blob),
+                id, policeJobNum.getText().toString(), councilJobNum.getText().toString(),
+                Integer.toString(0) + " "};
+        save(file, data);
+    }
+
     private void saveData() {
         String oldID = id;
         String newID = createID(Calendar.getInstance().getTime());;
@@ -492,18 +513,24 @@ public class EditEvent extends Activity{
         saveToDescription(newID);
         saveToVehicle();
         saveToVehicleComp(oldID);
+        updateEvent(oldID);
     }
 
     private void saveToDescription(String id) {
+        String catt;
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
         File dir = new File(path);
         dir.mkdirs();
+        if(cats.getSelectedItem().toString().contains("--Event Category--")) {
+            catt = " ";
+        } else {
+            catt = cats.getSelectedItem().toString().replaceAll("-", "");
+        }
         File file = new File(path, "/Description.txt");
-        String info = spotter.getSelectedItem().toString() + " - " +
-                cats.getSelectedItem().toString() + " - " +
-                desc.getText().toString().replaceAll("\n", "<br>").replaceAll("\r", ">") +
-                " - " + Calendar.getInstance().getTime().toString() +
-                " - BOLBs: " + Integer.toString(blob);
+        String info = spotter.getSelectedItem().toString() + "-<" + catt + ">-" +
+                desc.getText().toString()
+                        .replaceAll("\n", "<br>").replaceAll("\r", ">").replaceAll("'","") +
+                " - " + Calendar.getInstance().getTime().toString();
         String[] data = {id, info + " "};
         save(file, data);
     }
@@ -552,7 +579,9 @@ public class EditEvent extends Activity{
             File file = new File(path, "/Public.txt");
             for(People temp : people) {
                 String[] data = {temp.getId(),
-                        temp.getDescription().replaceAll("\n", "<br>").replaceAll("\r", ">") + " "};
+                        temp.getDescription()
+                                .replaceAll("\n", "<br>").replaceAll("\r", ">").replaceAll("'","")
+                                + " "};
                 if(temp.getBlob() > 0) {
                     blob += temp.getBlob();
                 }

@@ -18,12 +18,15 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -229,12 +232,13 @@ public class Home extends Activity{
                             if (Double.valueOf(kms.getText().toString()) > begin) {
                                 try {
                                     miles = Double.parseDouble(kms.getText().toString());
-                                    Toast.makeText(Home.this, "Uploading!",
-                                            Toast.LENGTH_SHORT).show();
                                     alertDialog.dismiss();
                                     saveToFile();
                                     Uploader send = new Uploader(Home.this);
-                                    if (send.upload()) {
+                                    AlertDialog alert = loadGif();
+                                    alert.show();
+                                    if(send.upload()) {
+                                        alert.dismiss();
                                         Home.this.finish();
                                     }
                                 } catch (Exception e) {
@@ -256,6 +260,7 @@ public class Home extends Activity{
         int num = events.size();
         final RadioButton[] rb = new RadioButton[num];
         group.removeAllViews();
+        group.clearCheck();
         for(int i=0; i<num; i++) {
             rb[i] = new RadioButton(this);
             rb[i].setText(events.get(i).toString());
@@ -411,7 +416,7 @@ public class Home extends Activity{
         }
     }
 
-    public static String[] load(File file) {
+    private static String[] load(File file) {
         FileInputStream fis = null;
         String[] array;
         try
@@ -439,6 +444,16 @@ public class Home extends Activity{
             array = new String[0];
         }
         return array;
+    }
+
+    private AlertDialog loadGif() {
+        Uploader send = new Uploader(Home.this);
+        ImageView gifImageView = new ImageView(this);
+        AlertDialog alert = new AlertDialog.Builder(this).create();
+        alert.setTitle("Uploading...");
+        alert.setView(gifImageView);
+        Glide.with(this).load("http://103.73.65.142/spinspinspin.gif").asGif().into(gifImageView);
+        return alert;
     }
 
     @Override

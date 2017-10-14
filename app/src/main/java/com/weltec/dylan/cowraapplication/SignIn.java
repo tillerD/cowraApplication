@@ -171,6 +171,7 @@ public class SignIn extends AppCompatActivity {
                         intent.putExtra("POLICE", policeNum.getText().toString());
                         intent.putExtra("LIST", (Serializable) patrolers);
                         intent.putExtra("KMS", kms.getText().toString());
+                        //clearFields();
                         startActivity(intent);
                     }
                 });
@@ -450,13 +451,13 @@ public class SignIn extends AppCompatActivity {
                     patts.add(item.replaceAll(",",""));
                 }
                 Toast.makeText(this,
-                        "Checking values. LogID is: " + data[length-9] +
-                                " and Active is: " + data[length],
+                        "Recovering...",
                         Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(SignIn.this, Home.class);
                 intent.putExtra("POLICE", crashedData[1].replaceAll(",",""));
                 intent.putExtra("LIST", (Serializable) patts);
                 intent.putExtra("KMS", crashedData[2].replaceAll(",",""));
+                //clearFields();
                 startActivity(intent);
             }
         } catch (Exception e) {
@@ -548,5 +549,17 @@ public class SignIn extends AppCompatActivity {
         latLon.add(longitude);
         latLon.add(latitude);
         return latLon;
+    }
+
+    private void clearFields() {
+        try {
+            patrolers.clear();
+            policeNum.setText("P0");
+            driver.setText("");
+            observer.setText("");
+            kms.setText("");
+        } catch (Exception e) {
+
+        }
     }
 }

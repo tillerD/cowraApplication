@@ -220,7 +220,7 @@ public class NewEvent extends Activity {
                     public void onClick(View v) {
                         if(desc.length() > 0 || num.length() > 0) {
                             if (desc.length() <= 0) {
-                                desc.setText("");
+                                desc.setText("NULL");
                             }
                             String id = createID(Calendar.getInstance().getTime());
                             if (num.length() > 0) {
@@ -316,13 +316,13 @@ public class NewEvent extends Activity {
                                 num.setText("0");
                             }
                             if (add1.getText().length() <= 0) {
-                                add1.setText("");
+                                add1.setText("NULL");
                             }
                             if (suburb.getText().length() <= 0) {
-                                suburb.setText("");
+                                suburb.setText("NULL");
                             }
                             if (add2.getText().length() <= 0) {
-                                add2.setText("");
+                                add2.setText("NULL");
                             }
                             PropDetails temp = new PropDetails(Integer.parseInt(num.getText().toString()),
                                     add1.getText().toString(),
@@ -402,22 +402,22 @@ public class NewEvent extends Activity {
                                 || color.length() > 0 || year.length() > 0
                                 || cls.length() > 0) {
                             if (plate.length() <= 0) {
-                                plate.setText("");
+                                plate.setText("NULL");
                             }
                             if (make.length() <= 0) {
-                                make.setText("");
+                                make.setText("NULL");
                             }
                             if (model.length() <= 0) {
-                                model.setText("");
+                                model.setText("NULL");
                             }
                             if (color.length() <= 0) {
-                                color.setText("");
+                                color.setText("NULL");
                             }
                             if (year.length() <= 0) {
-                                year.setText("");
+                                year.setText("NULL");
                             }
                             if (cls.length() <= 0) {
-                                cls.setText("");
+                                cls.setText("NULL");
                             }
                             String id = createID(Calendar.getInstance().getTime());
                             Vehicle temp = new Vehicle(plate.getText().toString(),
@@ -459,11 +459,12 @@ public class NewEvent extends Activity {
         if(cats.getSelectedItem().toString().contains("--Event Category--")) {
             catt = " ";
         } else {
-            catt = cats.getSelectedItem().toString().replaceAll("-", " ");
+            catt = cats.getSelectedItem().toString().replaceAll("-", "");
         }
-        String desc = spotter.getSelectedItem().toString() + " - " +
-                catt + " - " +
-                text.getText().toString().replaceAll("\n", "<br>").replaceAll("\r", ">");
+        String desc = spotter.getSelectedItem().toString() + "-<" +
+                catt + ">-" +
+                text.getText().toString()
+                        .replaceAll("\n", "<br>").replaceAll("\r", ">".replaceAll("'",""));
         String[] data = {id, desc + " "};
         save(file, data);
     }
@@ -512,7 +513,9 @@ public class NewEvent extends Activity {
             File file = new File(path, "/Public.txt");
             for(People temp : people) {
                 String[] data = {temp.getId(),
-                        temp.getDescription().replaceAll("\n", "<br>").replaceAll("\r", ">") + " "};
+                        temp.getDescription()
+                                .replaceAll("\n", "<br>").replaceAll("\r", ">").replaceAll("'","")
+                                + " "};
                 if(temp.getBlob() > 0) {
                     blob += temp.getBlob();
                 }
