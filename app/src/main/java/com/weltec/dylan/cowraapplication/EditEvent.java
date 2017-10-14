@@ -32,6 +32,8 @@ public class EditEvent extends Activity{
 
     private List patrolers;
     private String id;
+    private String ogSpotter;
+    private String ogCat;
     private int blob;
     private ArrayList<People> people;
     //private ArrayList<PropDetails> properties;
@@ -79,7 +81,6 @@ public class EditEvent extends Activity{
                 android.R.layout.simple_spinner_item);
         adapt.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         cats.setAdapter(adapt);
-
         Button pubBtn = (Button) findViewById(R.id.publiBtn);
         pubBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -440,10 +441,29 @@ public class EditEvent extends Activity{
         try {
             for (int i = 0; i < data.length; i += 2) {
                 String check = data[i].replaceAll(",", "");
-                if (eventId.contains(check)) {
+                if (check.contains(eventId)) {
                     String temp = data[i + 1].replaceAll(",", " ");
-                    desc.setText(temp.replaceAll("<br>", "\n").replaceAll(">", "\r")
-                            .replaceAll("<",""));
+                    String[] info = temp.replaceAll("<br>", "\n").replaceAll(">", "\r")
+                            .replaceAll("<","").split("-");
+                    ogSpotter = info[0].replaceAll("Spotter: ","");
+                    ogCat = info[1];
+                    try {
+                        desc.setText(info[2]);
+                    } catch (Exception e) {
+                        desc.setText("");
+                    }
+                    spotter.setSelection(patrolers.indexOf(ogSpotter));
+                    int index = 0;
+                    if(ogCat.contains("Wilful Damage")) {
+                        index = 1;
+                    }
+                    if(ogCat.contains("Disorder")) {
+                        index = 2;
+                    }
+                    if(ogCat.contains("Special Service")) {
+                        index = 3;
+                    }
+                    cats.setSelection(index);
                 }
             }
         } catch (Exception e) {

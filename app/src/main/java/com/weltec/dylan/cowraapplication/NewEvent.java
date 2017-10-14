@@ -461,8 +461,8 @@ public class NewEvent extends Activity {
         } else {
             catt = cats.getSelectedItem().toString().replaceAll("-", "");
         }
-        String desc = spotter.getSelectedItem().toString() + "-<" +
-                catt + ">-" +
+        String desc = "Spotter: " + spotter.getSelectedItem().toString() + "-<Category: " +
+                catt + ">- Description: " +
                 text.getText().toString()
                         .replaceAll("\n", "<br>").replaceAll("\r", ">".replaceAll("'",""));
         String[] data = {id, desc + " "};

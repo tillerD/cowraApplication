@@ -9,6 +9,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -88,10 +90,10 @@ public class Home extends Activity{
         polNum = (TextView) findViewById(R.id.curPoliceNum);
         polNum.setText("Police Job #" + policeNum);
         driverName = (TextView) findViewById(R.id.divName);
-        driverName.setText("Driver Name: " + patrolers.get(0).toString());
+        driverName.setText("Driver Name: " + patrolers.get(1).toString());
         obList = (TextView) findViewById(R.id.observerList);
         for(Object row : patrolers) {
-            if(row.toString().contains(patrolers.get(0).toString())){
+            if(row.toString().contains(patrolers.get(1).toString())){
             } else {
                 obList.append(row.toString() + "\n");
             }
@@ -110,7 +112,24 @@ public class Home extends Activity{
         endPatrol.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logOutPopUp(v);
+                if(checkConnected()) {
+                    logOutPopUp(v);
+                } else {
+                    final AlertDialog.Builder alert = new AlertDialog.Builder(Home.this);
+                    LinearLayout layout = new LinearLayout(Home.this);
+                    layout.setOrientation(LinearLayout.VERTICAL);
+                    final TextView name = new TextView(Home.this);
+                    name.setText("\tPlease check your internet connection, then try again.");
+                    layout.addView(name);
+                    alert.setTitle("Connection Error:")
+                            .setCancelable(false)
+                            .setView(layout)
+                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            });
+                    alert.show();
+                }
             }
         });
         Button createEvent = (Button) findViewById(R.id.newEventBtn);
@@ -459,5 +478,19 @@ public class Home extends Activity{
     @Override
     public void onBackPressed() {
         // do nothing.
+    }
+
+    private boolean checkConnected() {
+        boolean connected = false;
+        ConnectivityManager manager = (ConnectivityManager)
+                getSystemService(this.CONNECTIVITY_SERVICE);
+        if(manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
+                .getState() == NetworkInfo.State.CONNECTED ||
+                manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+                        .getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            connected = true;
+        }
+        return connected;
     }
 }

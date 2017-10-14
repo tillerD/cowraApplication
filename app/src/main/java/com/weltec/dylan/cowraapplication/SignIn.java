@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -56,6 +58,7 @@ public class SignIn extends AppCompatActivity {
         askForPermission(Manifest.permission.ACCESS_COARSE_LOCATION, LOCATION);
         askForPermission(Manifest.permission.READ_EXTERNAL_STORAGE, 1);
         askForPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
+        askForPermission(Manifest.permission.ACCESS_NETWORK_STATE, 1);
         //get text fields
         patrolers = new ArrayList<String>();
         driver = (EditText) findViewById(R.id.driverNameField);
@@ -183,10 +186,27 @@ public class SignIn extends AppCompatActivity {
     public void startBtn(View v) {
         if ((driver.length() > 0) && (observer.length() > 0)
                 && (policeNum.length() > 0) && (kms.length() > 0)) {
-            if (checkLogin(driver, observer)) {
-                if (onComplete()) {
-                    startPopUp(v);
+            if(checkConnected()) {
+                if (checkLogin(driver, observer)) {
+                    if (onComplete()) {
+                        startPopUp(v);
+                    }
                 }
+            } else {
+                final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                LinearLayout layout = new LinearLayout(SignIn.this);
+                layout.setOrientation(LinearLayout.VERTICAL);
+                final TextView name = new TextView(SignIn.this);
+                name.setText("\tPlease check your internet connection, then try again.");
+                layout.addView(name);
+                alert.setTitle("Connection Error:")
+                        .setCancelable(false)
+                        .setView(layout)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+                alert.show();
             }
         } else {
             if (driver.length() <= 0) {
@@ -520,8 +540,8 @@ public class SignIn extends AppCompatActivity {
     }
 
     private void saveToArray() {
-        patrolers.add(0, driver.getText());
-        patrolers.add(1, observer.getText());
+        patrolers.add(1, driver.getText());
+        patrolers.add(0, observer.getText());
     }
 
     private String createID(Date time) {
@@ -561,5 +581,19 @@ public class SignIn extends AppCompatActivity {
         } catch (Exception e) {
 
         }
+    }
+
+    private boolean checkConnected() {
+        boolean connected = false;
+        ConnectivityManager manager = (ConnectivityManager)
+                getSystemService(this.CONNECTIVITY_SERVICE);
+        if(manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
+                .getState() == NetworkInfo.State.CONNECTED ||
+                manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+                        .getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            connected = true;
+        }
+        return connected;
     }
 }
