@@ -452,18 +452,6 @@ public class EditEvent extends Activity{
                     } catch (Exception e) {
                         desc.setText("");
                     }
-                    spotter.setSelection(patrolers.indexOf(ogSpotter));
-                    int index = 0;
-                    if(ogCat.contains("Wilful Damage")) {
-                        index = 1;
-                    }
-                    if(ogCat.contains("Disorder")) {
-                        index = 2;
-                    }
-                    if(ogCat.contains("Special Service")) {
-                        index = 3;
-                    }
-                    cats.setSelection(index);
                 }
             }
         } catch (Exception e) {
@@ -495,43 +483,42 @@ public class EditEvent extends Activity{
     }
 
     private void saveData() {
-        String oldID = id;
-        String newID = createID(Calendar.getInstance().getTime());;
-        saveToNotes(oldID, newID);
-        saveToPeople(oldID);
-//        saveToProperty(oldID);
+        saveToPeople(id);
+//        saveToProperty(id);
         saveToPublic();
-        saveToDescription(newID);
+        updateDescription(id);
         saveToVehicle();
-        saveToVehicleComp(oldID);
-        updateEvent(oldID);
+        saveToVehicleComp(id);
+        updateEvent(id);
     }
 
-    private void saveToDescription(String id) {
-        String catt;
+    private void updateDescription(String id) {
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
         File dir = new File(path);
         dir.mkdirs();
+        File file = new File(path, "/Description.txt");
+        String[] temp = load(file);
+        List<String> event = new ArrayList<String>(Arrays.asList(temp));
+        for (int i = 0; i < event.size(); i++) {
+            event.set(i, event.get(i).replaceAll(",", "").replaceAll(" ", ""));
+        }
+        String catt;
         if(cats.getSelectedItem().toString().contains("--Event Category--")) {
             catt = " ";
         } else {
             catt = cats.getSelectedItem().toString().replaceAll("-", "");
         }
-        File file = new File(path, "/Description.txt");
-        String info = spotter.getSelectedItem().toString() + "-<" + catt + ">-" +
+        String info = "Spotter: " + spotter.getSelectedItem().toString() + "-<Category: " +
+                catt + ">- Description: " +
                 desc.getText().toString()
-                        .replaceAll("\n", "<br>").replaceAll("\r", ">").replaceAll("'","") +
-                " - " + Calendar.getInstance().getTime().toString();
-        String[] data = {id, info + " "};
-        save(file, data);
-    }
-
-    private void saveToNotes(String old, String id) {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
-        File dir = new File(path);
-        dir.mkdirs();
-        File file = new File(path, "/Notes.txt");
-        String[] data = {old, id + " "};
+                        .replaceAll("\n", "<br>").replaceAll("\r", ">".replaceAll("'",""));
+        for (int i = 0; i < event.size(); i += 2) {
+            if (event.get(i).equals(id)) {
+                event.set(i + 1, info);
+            }
+        }
+        String[] data = event.toArray(new String[0]);
+        file.delete();
         save(file, data);
     }
 

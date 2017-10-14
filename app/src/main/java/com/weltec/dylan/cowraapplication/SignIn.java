@@ -540,8 +540,8 @@ public class SignIn extends AppCompatActivity {
     }
 
     private void saveToArray() {
-        patrolers.add(1, driver.getText());
         patrolers.add(0, observer.getText());
+        patrolers.add(1, driver.getText());
     }
 
     private String createID(Date time) {
@@ -585,14 +585,18 @@ public class SignIn extends AppCompatActivity {
 
     private boolean checkConnected() {
         boolean connected = false;
-        ConnectivityManager manager = (ConnectivityManager)
-                getSystemService(this.CONNECTIVITY_SERVICE);
-        if(manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
-                .getState() == NetworkInfo.State.CONNECTED ||
-                manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                        .getState() == NetworkInfo.State.CONNECTED) {
-            //we are connected to a network
-            connected = true;
+        try {
+            ConnectivityManager manager = (ConnectivityManager)
+                    getSystemService(this.CONNECTIVITY_SERVICE);
+            if (manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+                            .getState() == NetworkInfo.State.CONNECTED) {
+                //we are connected to a network
+                connected = true;
+            }
+        } catch (Exception e) {
+            Toast.makeText(this,
+                    "Error: Checking internet connection! " + e,
+                    Toast.LENGTH_LONG).show();
         }
         return connected;
     }

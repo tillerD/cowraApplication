@@ -115,20 +115,7 @@ public class Home extends Activity{
                 if(checkConnected()) {
                     logOutPopUp(v);
                 } else {
-                    final AlertDialog.Builder alert = new AlertDialog.Builder(Home.this);
-                    LinearLayout layout = new LinearLayout(Home.this);
-                    layout.setOrientation(LinearLayout.VERTICAL);
-                    final TextView name = new TextView(Home.this);
-                    name.setText("\tPlease check your internet connection, then try again.");
-                    layout.addView(name);
-                    alert.setTitle("Connection Error:")
-                            .setCancelable(false)
-                            .setView(layout)
-                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                }
-                            });
-                    alert.show();
+                    connectFail();
                 }
             }
         });
@@ -484,13 +471,28 @@ public class Home extends Activity{
         boolean connected = false;
         ConnectivityManager manager = (ConnectivityManager)
                 getSystemService(this.CONNECTIVITY_SERVICE);
-        if(manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
-                .getState() == NetworkInfo.State.CONNECTED ||
-                manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+        if(manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
                         .getState() == NetworkInfo.State.CONNECTED) {
             //we are connected to a network
             connected = true;
         }
         return connected;
+    }
+
+    private void connectFail() {
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        LinearLayout layout = new LinearLayout(Home.this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        final TextView name = new TextView(Home.this);
+        name.setText("\tPlease check your internet connection, then try again.");
+        layout.addView(name);
+        alert.setTitle("Connection Error:")
+                .setCancelable(false)
+                .setView(layout)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        alert.show();
     }
 }

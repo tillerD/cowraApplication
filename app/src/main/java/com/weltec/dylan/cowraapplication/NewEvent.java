@@ -148,8 +148,13 @@ public class NewEvent extends Activity {
     }
 
     private String getTime(Date time) {
-        String id = Integer.toString(time.getHours()) + ":"
-                + Integer.toString(time.getMinutes());
+        if(Integer.toString(time.getMinutes()).length() > 1) {
+            String id = Integer.toString(time.getHours()) + ":"
+                    + Integer.toString(time.getMinutes());
+        } else {
+            String id = Integer.toString(time.getHours()) + ":0"
+                    + Integer.toString(time.getMinutes());
+        }
         return id;
     }
 
