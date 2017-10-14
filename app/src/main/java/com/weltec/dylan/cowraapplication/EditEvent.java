@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -59,7 +60,7 @@ public class EditEvent extends Activity{
         people = new ArrayList<>();
         //properties = new ArrayList<>();
         vehicles = new ArrayList<>();
-        blob = getBolb(id);
+        blob = 0;
         lat = (TextView) findViewById(R.id.latField);
         lon = (TextView) findViewById(R.id.lonField);
         time = (TextView) findViewById(R.id.timefield);
@@ -441,7 +442,8 @@ public class EditEvent extends Activity{
                 String check = data[i].replaceAll(",", "");
                 if (eventId.contains(check)) {
                     String temp = data[i + 1].replaceAll(",", " ");
-                    desc.setText(temp.replaceAll("<br>", "\n").replaceAll(">", "\r"));
+                    desc.setText(temp.replaceAll("<br>", "\n").replaceAll(">", "\r")
+                            .replaceAll("<",""));
                 }
             }
         } catch (Exception e) {
@@ -450,57 +452,26 @@ public class EditEvent extends Activity{
         }
     }
 
-    private int getBolb(String eventId) {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
-        File dir = new File(path);
-        dir.mkdirs();
-        File file = new File(path, "/Event.txt");
-        String[] data = load(file);
-        if(data.length > 13) {
-            try {
-                for (int i = 13; i < data.length; i += 13) {
-                    String check = data[i].toString();
-                    String value = eventId;
-                    if (check.contains(value)) {
-                        String pjn = data[i + 10].toString().replaceAll(",", " ");
-                        String cjn = data[i + 11].toString().replaceAll(",", " ");
-                        policeJobNum.setText(pjn);
-                        councilJobNum.setText(cjn);
-                        String temp = data[i + 8].toString().replaceAll(",", " ");
-                        String[] array = temp.split(" ");
-                        int var = Integer.valueOf(array[0]);
-                        return var;
-                    }
-                }
-            } catch(Exception e){
-                Toast.makeText(EditEvent.this, "Failed getting BOLB value!",
-                        Toast.LENGTH_SHORT).show();
-                return 0;
-            }
-        } else {
-            return 0;
-        }
-        return 0;
-    }
-
     private void updateEvent(String eventId) {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
-        File dir = new File(path);
-        dir.mkdirs();
-        File file = new File(path, "/Event.txt");
-        String blank = "NULL";
-        String veh = "NULL";
-        String will = "NULL";
-        String prop = "NULL";
-        String pep = "NULL";
-        if(vehicles.isEmpty() == false) {veh = id;}
-        if(cats.getSelectedItem().toString().equals("--Wilful Damage--")) {
-            will = Integer.toString(1);}
-        if(people.isEmpty() == false) {pep = id;}
-        String[] data = {id, id, blank, blank, veh, will, prop, pep, Integer.toString(blob),
-                id, policeJobNum.getText().toString(), councilJobNum.getText().toString(),
-                Integer.toString(0) + " "};
-        save(file, data);
+        if(blob > 0) {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+            File dir = new File(path);
+            dir.mkdirs();
+            File file = new File(path, "/Event.txt");
+            String[] temp = load(file);
+            List<String> event = new ArrayList<String>(Arrays.asList(temp));
+            for (int i = 0; i < event.size(); i++) {
+                event.set(i, event.get(i).replaceAll(",", "").replaceAll(" ", ""));
+            }
+            for (int i = 0; i < event.size(); i += 13) {
+                if (event.get(i).equals(eventId)) {
+                    event.set(i + 8, Integer.toString(blob));
+                }
+            }
+            String[] data = event.toArray(new String[0]);
+            file.delete();
+            save(file, data);
+        }
     }
 
     private void saveData() {
@@ -582,9 +553,6 @@ public class EditEvent extends Activity{
                         temp.getDescription()
                                 .replaceAll("\n", "<br>").replaceAll("\r", ">").replaceAll("'","")
                                 + " "};
-                if(temp.getBlob() > 0) {
-                    blob += temp.getBlob();
-                }
                 save(file, data);
             }
         }
