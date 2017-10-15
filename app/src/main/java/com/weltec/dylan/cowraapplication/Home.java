@@ -304,19 +304,12 @@ public class Home extends Activity{
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
         File dir = new File(path);
         dir.mkdirs();
-        File file = new File(path, "/Event.txt");
-        File file2 = new File(path, "/TimeLoc.txt");
+        File file = new File(path, "/TimeLoc.txt");
         String[] data = load(file);
-        String[] data2 = load(file2);
         List idList = new ArrayList();
-        if(data.length > 13) {
-            for (int i = 13; i < data.length; i += 13) {
-                for(int j = 0; j < data2.length; j += 4) {
-                    if(data2[j].toString().contains(data[i])) {
-                        idList.add(data[i].toString().replaceAll(",", " ") + "Date/Time: " +
-                                data2[j+3].toString().replaceAll(",", " "));
-                    }
-                }
+        if(data.length > 4) {
+            for (int i = 4; i < data.length; i += 4) {
+                idList.add("Date/Time: " + data[i+3].toString().replaceAll(",", " "));
             }
             displayEvents(idList, eventIds);
         } else {

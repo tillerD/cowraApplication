@@ -18,7 +18,7 @@
     <TextView
         android:id="@+id/latField"
         android:layout_width="346dp"
-        android:layout_height="43dp"
+        android:layout_height="41dp"
         android:text=""
         android:textSize="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -31,7 +31,7 @@
     <TextView
         android:id="@+id/lonField"
         android:layout_width="354dp"
-        android:layout_height="43dp"
+        android:layout_height="41dp"
         android:text=""
         android:textSize="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
