@@ -149,13 +149,12 @@ public class NewEvent extends Activity {
 
     private String getTime(Date time) {
         if(Integer.toString(time.getMinutes()).length() > 1) {
-            String id = Integer.toString(time.getHours()) + ":"
+            return Integer.toString(time.getHours()) + ":"
                     + Integer.toString(time.getMinutes());
         } else {
-            String id = Integer.toString(time.getHours()) + ":0"
+            return Integer.toString(time.getHours()) + ":0"
                     + Integer.toString(time.getMinutes());
         }
-        return id;
     }
 
     private void getLocation() {
@@ -329,7 +328,7 @@ public class NewEvent extends Activity {
                             if (add2.getText().length() <= 0) {
                                 add2.setText("NULL");
                             }
-                            PropDetails temp = new PropDetails(Integer.parseInt(num.getText().toString()),
+                            PropDetails temp = new PropDetails(num.getText().toString(),
                                     add1.getText().toString(),
                                     suburb.getText().toString(),
                                     add2.getText().toString(),
@@ -503,7 +502,7 @@ public class NewEvent extends Activity {
             File dir = new File(path);
             dir.mkdirs();
             File file = new File(path, "/Property.txt");
-            String[] data = {id, Integer.toString(temp.getNumber()), temp.getStreet(),
+            String[] data = {id, temp.getNumber(), temp.getStreet(),
                     temp.getSuburb(), temp.getCity(), Integer.toString(temp.getNoise()),
                     Integer.toString(temp.getBulglary()) + " "};
             save(file, data);

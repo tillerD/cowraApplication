@@ -290,7 +290,7 @@ public class Home extends Activity{
             String singleId = button.getText().toString();
             String[] data = singleId.split(" ");
             Intent intent = new Intent(Home.this, EditEvent.class);
-            intent.putExtra("IDS", data[0]);
+            intent.putExtra("IDS", data[2]);
             intent.putExtra("LIST", (Serializable) patrolers);
             startActivity(intent);
         } catch (Exception e){
@@ -370,8 +370,8 @@ public class Home extends Activity{
         ArrayList latLon = new ArrayList();
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
-        latLon.add(longitude);
         latLon.add(latitude);
+        latLon.add(longitude);
         return latLon;
     }
 

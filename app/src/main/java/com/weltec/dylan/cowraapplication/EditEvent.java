@@ -52,7 +52,7 @@ public class EditEvent extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_event);
         patrolers = getIntent().getStringArrayListExtra("LIST");
-        id = getIntent().getStringExtra("IDS");
+        id = getId(getIntent().getStringExtra("IDS"));
         TextView eventId = (TextView) findViewById(R.id.submitEventLabel);
         eventId.setText("Edit Event - ID: " + id);
         policeJobNum = (EditText) findViewById(R.id.policeJobNumTxtField);
@@ -130,6 +130,20 @@ public class EditEvent extends Activity{
                 closeEvent();
             }
         });
+    }
+
+    private String getId(String ids) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/TimeLoc.txt");
+        String[] data = load(file);
+        for(int i = 7; i < data.length; i+=4) {
+            if(data[i].contains(ids)) {
+                return data[4];
+            }
+        }
+        return null;
     }
 
     //Public popup window
@@ -396,8 +410,8 @@ public class EditEvent extends Activity{
                 String check = data[i].toString();
                 String value = eventId;
                 if (check.contains(value)) {
-                    String latitude = data[i + 1].toString().replaceAll(",", " ");
-                    String longitude = data[i + 2].toString().replaceAll(",", " ");
+                    String latitude = data[i + 2].toString().replaceAll(",", " ");
+                    String longitude = data[i + 1].toString().replaceAll(",", " ");
                     String ticToc = data[i + 3].toString().replaceAll(",", " ");
                     String[] justTime = ticToc.split("-|\\ |\\:");
                     lat.setText("Lat: " + latitude);

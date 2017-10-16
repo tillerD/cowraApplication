@@ -566,8 +566,8 @@ public class SignIn extends AppCompatActivity {
         ArrayList latLon = new ArrayList();
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
-        latLon.add(longitude);
         latLon.add(latitude);
+        latLon.add(longitude);
         return latLon;
     }
 
