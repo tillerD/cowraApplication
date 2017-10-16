@@ -190,6 +190,20 @@ public class Home extends Activity{
                 .setPositiveButton("Swap", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String text = patSpin.getSelectedItem().toString();
+                        int first=0;
+                        int second=0;
+                        for(Object row : patrolers) {
+                            if(row.toString().contains(text)) {
+                                first = patrolers.indexOf(row);
+                            }
+                            if(row.toString().contains(driverName.getText().toString()
+                                    .replaceAll("Driver Name: ",""))) {
+                                second = patrolers.indexOf(row);
+                            }
+                        }
+                        patrolers.set(first, driverName.getText().toString()
+                                .replaceAll("Driver Name: ",""));
+                        patrolers.set(second, text);
                         driverName.setText("Driver Name: " + text);
                         obList.setText("");
                         for(Object row : patrolers) {
