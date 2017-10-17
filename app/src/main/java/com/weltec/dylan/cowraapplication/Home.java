@@ -302,9 +302,8 @@ public class Home extends Activity{
             int index = group.getCheckedRadioButtonId();
             RadioButton button = (RadioButton) findViewById(index);
             String singleId = button.getText().toString();
-            String[] data = singleId.split(" ");
             Intent intent = new Intent(Home.this, EditEvent.class);
-            intent.putExtra("IDS", data[2]);
+            intent.putExtra("IDS", singleId);
             intent.putExtra("LIST", (Serializable) patrolers);
             startActivity(intent);
         } catch (Exception e){
@@ -463,7 +462,7 @@ public class Home extends Activity{
         Uploader send = new Uploader(Home.this);
         ImageView gifImageView = new ImageView(this);
         AlertDialog alert = new AlertDialog.Builder(this).create();
-        alert.setTitle("Uploading...");
+        alert.setTitle("Plese close the app.");
         alert.setView(gifImageView);
         Glide.with(this).load("http://103.73.65.142/spinspinspin.gif").asGif().into(gifImageView);
         return alert;

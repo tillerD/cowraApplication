@@ -574,14 +574,21 @@ public class NewEvent extends Activity {
         String will = "NULL";
         String prop = "NULL";
         String pep = "NULL";
+        String ponum = policeJobNum.getText().toString();
+        String conum = councilJobNum.getText().toString();
+        if(ponum.isEmpty() || ponum.equals("P0")) {
+            ponum = "NULL";
+        }
+        if(conum.isEmpty() || conum.equals("C:")) {
+            conum = "NULL";
+        }
         if(vehicles.isEmpty() == false) {veh = id;}
         if(cats.getSelectedItem().toString().equals("--Wilful Damage--")) {
             will = Integer.toString(1);}
         if(properties.isEmpty() == false) {prop = id;}
         if(people.isEmpty() == false) {pep = id;}
         String[] data = {id, id, blank, blank, veh, will, prop, pep, Integer.toString(blob),
-                id, policeJobNum.getText().toString(), councilJobNum.getText().toString(),
-                Integer.toString(0) + " "};
+                id, ponum, conum, Integer.toString(0) + " "};
         save(file, data);
     }
 

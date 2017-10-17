@@ -138,9 +138,11 @@ public class EditEvent extends Activity{
         dir.mkdirs();
         File file = new File(path, "/TimeLoc.txt");
         String[] data = load(file);
+        String[] stuff = ids.split(" ");
+        String time = stuff[1] + " " + stuff[2];
         for(int i = 7; i < data.length; i+=4) {
-            if(data[i].contains(ids)) {
-                return data[4];
+            if(data[i].contains(time)) {
+                return data[i-3];
             }
         }
         return null;
@@ -525,7 +527,9 @@ public class EditEvent extends Activity{
         String info = "Spotter: " + spotter.getSelectedItem().toString() + "-<Category: " +
                 catt + ">- Description: " +
                 desc.getText().toString()
-                        .replaceAll("\n", "<br>").replaceAll("\r", ">".replaceAll("'",""));
+                        .replaceAll("\n", "<br>").replaceAll("\r", ">".replaceAll("'",""))
+                + "Police Number: " + policeJobNum.getText().toString() + "Council Number: "
+                + councilJobNum.getText().toString();
         for (int i = 0; i < event.size(); i += 2) {
             if (event.get(i).equals(id)) {
                 event.set(i + 1, info);
