@@ -320,7 +320,7 @@ public class SignIn extends AppCompatActivity {
         File file = new File(path, "/Event.txt");
         String blank = "NULL";
         String[] data = {id, id, id, id, blank, blank, blank, blank, blank, id,
-                policeNum.getText().toString(), blank, Integer.toString(1)};
+                policeNum.getText().toString(), blank, Integer.toString(1) + " "};
         save(file, data);
     }
 
@@ -329,7 +329,7 @@ public class SignIn extends AppCompatActivity {
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/LogEvent.txt");
-        String[] data = {id, kms.getText().toString()};
+        String[] data = {id, kms.getText().toString() + " "};
         save(file, data);
     }
 
@@ -338,7 +338,7 @@ public class SignIn extends AppCompatActivity {
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/Notes.txt");
-        String[] data = {id, id};
+        String[] data = {id, id + " "};
         save(file, data);
     }
 
@@ -348,8 +348,8 @@ public class SignIn extends AppCompatActivity {
         dir.mkdirs();
         File file = new File(path, "/Patrollers.txt");
         String[] results = result.split(",");
-        String[] data = {id, results[0], Integer.toString(1)};
-        String[] data2 = {id, results[1], Integer.toString(0)};
+        String[] data = {id, results[0], Integer.toString(1) + " "};
+        String[] data2 = {id, results[1], Integer.toString(0) + " "};
         save(file, data);
         saveAppend(file, data2);
     }
@@ -427,7 +427,7 @@ public class SignIn extends AppCompatActivity {
         for( Object temp : patrolers) {
             pat += temp.toString() + "-";
         }
-        String[] data = {pat, policeNum.getText().toString(), kms.getText().toString()};
+        String[] data = {pat, policeNum.getText().toString(), kms.getText().toString() + " "};
         save(file, data);
     }
 
