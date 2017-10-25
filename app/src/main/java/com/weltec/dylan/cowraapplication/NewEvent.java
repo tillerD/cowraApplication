@@ -532,7 +532,7 @@ public class NewEvent extends Activity {
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
         File dir = new File(path);
         dir.mkdirs();
-        File file = new File(path, "/TImeLoc.txt");
+        File file = new File(path, "/TimeLoc.txt");
         String[] data = {id, lat.getText().toString().replaceAll("Lat: ",""),
                 lon.getText().toString().replaceAll("Lon: ",""),
                 android.text.format.DateFormat.format("yyy-MM-dd hh:mm:ss", time).toString() + " "};

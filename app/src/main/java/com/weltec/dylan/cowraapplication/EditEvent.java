@@ -52,13 +52,14 @@ public class EditEvent extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_event);
         patrolers = getIntent().getStringArrayListExtra("LIST");
-        id = getId(getIntent().getStringExtra("IDS"));
+        id = getId(getIntent().getStringExtra("IDS")).replaceAll(",","");
         TextView eventId = (TextView) findViewById(R.id.submitEventLabel);
         eventId.setText("Edit Event - ID: " + id);
         policeJobNum = (EditText) findViewById(R.id.policeJobNumTxtField);
         policeJobNum.setText("P0");
         councilJobNum = (EditText) findViewById(R.id.councilJobNumTxtField);
         councilJobNum.setText("C:");
+        getJobNumbers(id);
         people = new ArrayList<>();
         //properties = new ArrayList<>();
         vehicles = new ArrayList<>();
@@ -68,7 +69,7 @@ public class EditEvent extends Activity{
         time = (TextView) findViewById(R.id.timefield);
         getTimeLoc(id);
         desc = (EditText) findViewById(R.id.description);
-        getNotes();
+        getDescription(id);
         spotter = (Spinner) findViewById(R.id.spotterSpinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(EditEvent.this,
                 android.R.layout.simple_spinner_item,
@@ -146,6 +147,24 @@ public class EditEvent extends Activity{
             }
         }
         return null;
+    }
+
+    private void getJobNumbers(String ids) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Event.txt");
+        String[] data = load(file);
+        for(int i = 13; i < data.length; i+=13) {
+            if(data[i].replaceAll(",","").contains(ids)) {
+                if(data[i+10].contains("NULL") == false) {
+                    policeJobNum.setText(data[i + 10].replaceAll(",",""));
+                }
+                if(data[i+11].contains("NULL") == false) {
+                    councilJobNum.setText(data[i+11].replaceAll(",",""));
+                }
+            }
+        }
     }
 
     //Public popup window
@@ -409,41 +428,19 @@ public class EditEvent extends Activity{
         String[] data = load(file);
         try {
             for (int i = 0; i < data.length; i += 4) {
-                String check = data[i].toString();
-                String value = eventId;
-                if (check.contains(value)) {
-                    String latitude = data[i + 2].toString().replaceAll(",", " ");
-                    String longitude = data[i + 1].toString().replaceAll(",", " ");
-                    String ticToc = data[i + 3].toString().replaceAll(",", " ");
+                String check = data[i].replaceAll(",","");
+                if (check.contains(eventId)) {
+                    String latitude = data[i + 2].replaceAll(",", " ");
+                    String longitude = data[i + 1].replaceAll(",", " ");
+                    String ticToc = data[i + 3].replaceAll(",", " ");
                     String[] justTime = ticToc.split("-|\\ |\\:");
                     lat.setText("Lat: " + latitude);
                     lon.setText("Lon: " + longitude);
-                    time.setText(justTime[3].toString() + ":" + justTime[4].toString());
+                    time.setText(justTime[3] + ":" + justTime[4]);
                 }
             }
         } catch (Exception e) {
             Toast.makeText(EditEvent.this, "Failed getting TimeLoc data!",
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void getNotes() {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
-        File dir = new File(path);
-        dir.mkdirs();
-        File file = new File(path, "/Notes.txt");
-        String[] data = load(file);
-        try {
-            for (int i = 0; i < data.length; i += 2) {
-                String check = data[i].toString();
-                String value = id;
-                if (check.contains(value)) {
-                    String temp = data[i + 1].toString();
-                    getDescription(temp);
-                }
-            }
-        } catch (Exception e) {
-            Toast.makeText(EditEvent.this, "Failed getting Event description!",
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -459,14 +456,14 @@ public class EditEvent extends Activity{
                 String check = data[i].replaceAll(",", "");
                 if (check.contains(eventId)) {
                     String temp = data[i + 1].replaceAll(",", " ");
-                    String[] info = temp.replaceAll("<br>", "\n").replaceAll(">", "\r")
+                    String[] info = temp.replaceAll("<br>", "\n").replaceAll(">", "")
                             .replaceAll("<","").split("-");
                     ogSpotter = info[0].replaceAll("Spotter: ","");
                     ogCat = info[1];
                     try {
-                        desc.setText(info[2]);
+                        desc.setText(info[2].replaceAll("Description:",""));
                     } catch (Exception e) {
-                        desc.setText("");
+                        desc.setText("Failed cause of " + e);
                     }
                 }
             }
@@ -499,16 +496,16 @@ public class EditEvent extends Activity{
     }
 
     private void saveData() {
-        saveToPeople(id);
+        saveToPeople(id.replaceAll(" ",""));
 //        saveToProperty(id);
         saveToPublic();
-        updateDescription(id);
+        updateDescription(id.replaceAll(" ",""));
         saveToVehicle();
-        saveToVehicleComp(id);
-        updateEvent(id);
+        saveToVehicleComp(id.replaceAll(" ",""));
+        updateEvent(id.replaceAll(" ",""));
     }
 
-    private void updateDescription(String id) {
+    private void updateDescription(String eventId) {
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
         File dir = new File(path);
         dir.mkdirs();
@@ -516,7 +513,7 @@ public class EditEvent extends Activity{
         String[] temp = load(file);
         List<String> event = new ArrayList<String>(Arrays.asList(temp));
         for (int i = 0; i < event.size(); i++) {
-            event.set(i, event.get(i).replaceAll(",", "").replaceAll(" ", ""));
+            event.set(i, event.get(i).replaceAll(",", ""));
         }
         String catt;
         if(cats.getSelectedItem().toString().contains("--Event Category--")) {
@@ -527,11 +524,11 @@ public class EditEvent extends Activity{
         String info = "Spotter: " + spotter.getSelectedItem().toString() + "-<Category: " +
                 catt + ">- Description: " +
                 desc.getText().toString()
-                        .replaceAll("\n", "<br>").replaceAll("\r", ">".replaceAll("'",""))
-                + "Police Number: " + policeJobNum.getText().toString() + "Council Number: "
+                        .replaceAll("\n", "<br>").replaceAll("\r", ">").replaceAll("'","")
+                + "<br>Police Number: " + policeJobNum.getText().toString() + "<br>Council Number: "
                 + councilJobNum.getText().toString();
         for (int i = 0; i < event.size(); i += 2) {
-            if (event.get(i).equals(id)) {
+            if (event.get(i).equals(eventId)) {
                 event.set(i + 1, info);
             }
         }
