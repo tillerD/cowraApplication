@@ -28,7 +28,7 @@ import java.util.List;
  * Created by Dylan on 7/10/2017.
  */
 
-public class EditEvent extends Activity{
+public class EditEvent extends Activity {
 
     private List patrolers;
     private String id;
@@ -52,7 +52,7 @@ public class EditEvent extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_event);
         patrolers = getIntent().getStringArrayListExtra("LIST");
-        id = getId(getIntent().getStringExtra("IDS")).replaceAll(",","");
+        id = getId(getIntent().getStringExtra("IDS")).replaceAll(",", "");
         TextView eventId = (TextView) findViewById(R.id.submitEventLabel);
         eventId.setText("Edit Event - ID: " + id);
         policeJobNum = (EditText) findViewById(R.id.policeJobNumTxtField);
@@ -100,7 +100,10 @@ public class EditEvent extends Activity{
         Button vehBtn = (Button) findViewById(R.id.VehicleBtn);
         vehBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { vehiclePopUp(v); }});
+            public void onClick(View v) {
+                vehiclePopUp(v);
+            }
+        });
         final Button submitEvent = (Button) findViewById(R.id.eventBtn);
         submitEvent.setText("Submit Event");
         submitEvent.setOnClickListener(new View.OnClickListener() {
@@ -141,9 +144,9 @@ public class EditEvent extends Activity{
         String[] data = load(file);
         String[] stuff = ids.split(" ");
         String time = stuff[1] + " " + stuff[2];
-        for(int i = 7; i < data.length; i+=4) {
-            if(data[i].contains(time)) {
-                return data[i-3];
+        for (int i = 7; i < data.length; i += 4) {
+            if (data[i].contains(time)) {
+                return data[i - 3];
             }
         }
         return null;
@@ -155,13 +158,13 @@ public class EditEvent extends Activity{
         dir.mkdirs();
         File file = new File(path, "/Event.txt");
         String[] data = load(file);
-        for(int i = 13; i < data.length; i+=13) {
-            if(data[i].replaceAll(",","").contains(ids)) {
-                if(data[i+10].contains("NULL") == false) {
-                    policeJobNum.setText(data[i + 10].replaceAll(",",""));
+        for (int i = 13; i < data.length; i += 13) {
+            if (data[i].replaceAll(",", "").contains(ids)) {
+                if (data[i + 10].contains("NULL") == false) {
+                    policeJobNum.setText(data[i + 10].replaceAll(",", ""));
                 }
-                if(data[i+11].contains("NULL") == false) {
-                    councilJobNum.setText(data[i+11].replaceAll(",",""));
+                if (data[i + 11].contains("NULL") == false) {
+                    councilJobNum.setText(data[i + 11].replaceAll(",", ""));
                 }
             }
         }
@@ -199,7 +202,7 @@ public class EditEvent extends Activity{
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(desc.length() > 0 || num.length() > 0) {
+                        if (desc.length() > 0 || num.length() > 0) {
                             if (desc.length() <= 0) {
                                 desc.setText("NULL");
                             }
@@ -374,7 +377,7 @@ public class EditEvent extends Activity{
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(plate.length() > 0 || make.length() > 0 || model.length() > 0
+                        if (plate.length() > 0 || make.length() > 0 || model.length() > 0
                                 || color.length() > 0 || year.length() > 0
                                 || cls.length() > 0) {
                             if (plate.length() <= 0) {
@@ -428,7 +431,7 @@ public class EditEvent extends Activity{
         String[] data = load(file);
         try {
             for (int i = 0; i < data.length; i += 4) {
-                String check = data[i].replaceAll(",","");
+                String check = data[i].replaceAll(",", "");
                 if (check.contains(eventId)) {
                     String latitude = data[i + 2].replaceAll(",", " ");
                     String longitude = data[i + 1].replaceAll(",", " ");
@@ -457,11 +460,11 @@ public class EditEvent extends Activity{
                 if (check.contains(eventId)) {
                     String temp = data[i + 1].replaceAll(",", " ");
                     String[] info = temp.replaceAll("<br>", "\n").replaceAll(">", "")
-                            .replaceAll("<","").split("-");
-                    ogSpotter = info[0].replaceAll("Spotter: ","");
+                            .replaceAll("<", "").split("-");
+                    ogSpotter = info[0].replaceAll("Spotter: ", "");
                     ogCat = info[1];
                     try {
-                        desc.setText(info[2].replaceAll("Description:",""));
+                        desc.setText(info[2].replaceAll("Description:", ""));
                     } catch (Exception e) {
                         desc.setText("Failed cause of " + e);
                     }
@@ -474,35 +477,45 @@ public class EditEvent extends Activity{
     }
 
     private void updateEvent(String eventId) {
-        if(blob > 0) {
-            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
-            File dir = new File(path);
-            dir.mkdirs();
-            File file = new File(path, "/Event.txt");
-            String[] temp = load(file);
-            List<String> event = new ArrayList<String>(Arrays.asList(temp));
-            for (int i = 0; i < event.size(); i++) {
-                event.set(i, event.get(i).replaceAll(",", "").replaceAll(" ", ""));
-            }
-            for (int i = 0; i < event.size(); i += 13) {
-                if (event.get(i).equals(eventId)) {
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
+        File dir = new File(path);
+        dir.mkdirs();
+        File file = new File(path, "/Event.txt");
+        String[] temp = load(file);
+        List<String> event = new ArrayList<String>(Arrays.asList(temp));
+        for (int i = 0; i < event.size(); i++) {
+            event.set(i, event.get(i).replaceAll(",", "").replaceAll(" ", ""));
+        }
+        for (int i = 13; i < event.size(); i += 13) {
+            if (event.get(i).equals(eventId)) {
+                if (blob > 0) {
                     event.set(i + 8, Integer.toString(blob));
                 }
+                String ponum = policeJobNum.getText().toString();
+                String conum = councilJobNum.getText().toString();
+                if (ponum.isEmpty() || ponum.equals("P0")) {
+                    ponum = "NULL";
+                }
+                if (conum.isEmpty() || conum.equals("C:")) {
+                    conum = "NULL";
+                }
+                event.set(i + 10, ponum);
+                event.set(i + 11, conum);
             }
-            String[] data = event.toArray(new String[0]);
-            file.delete();
-            save(file, data);
         }
+        String[] data = event.toArray(new String[0]);
+        file.delete();
+        save(file, data);
     }
 
     private void saveData() {
-        saveToPeople(id.replaceAll(" ",""));
+        saveToPeople(id.replaceAll(" ", ""));
 //        saveToProperty(id);
         saveToPublic();
-        updateDescription(id.replaceAll(" ",""));
+        updateDescription(id.replaceAll(" ", ""));
         saveToVehicle();
-        saveToVehicleComp(id.replaceAll(" ",""));
-        updateEvent(id.replaceAll(" ",""));
+        saveToVehicleComp(id.replaceAll(" ", ""));
+        updateEvent(id.replaceAll(" ", ""));
     }
 
     private void updateDescription(String eventId) {
@@ -516,7 +529,7 @@ public class EditEvent extends Activity{
             event.set(i, event.get(i).replaceAll(",", ""));
         }
         String catt;
-        if(cats.getSelectedItem().toString().contains("--Event Category--")) {
+        if (cats.getSelectedItem().toString().contains("--Event Category--")) {
             catt = " ";
         } else {
             catt = cats.getSelectedItem().toString().replaceAll("-", "");
@@ -524,11 +537,9 @@ public class EditEvent extends Activity{
         String info = "Spotter: " + spotter.getSelectedItem().toString() + "-<Category: " +
                 catt + ">- Description: " +
                 desc.getText().toString()
-                        .replaceAll("\n", "<br>").replaceAll("\r", ">").replaceAll("'","")
-                + "<br>Police Number: " + policeJobNum.getText().toString() + "<br>Council Number: "
-                + councilJobNum.getText().toString();
+                        .replaceAll("\n", "<br>").replaceAll("\r", ">").replaceAll("'", "");
         for (int i = 0; i < event.size(); i += 2) {
-            if (event.get(i).equals(eventId)) {
+            if (event.get(i).contains(eventId)) {
                 event.set(i + 1, info);
             }
         }
@@ -538,12 +549,12 @@ public class EditEvent extends Activity{
     }
 
     private void saveToPeople(String id) {
-        if(people.isEmpty() == false) {
+        if (people.isEmpty() == false) {
             String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
             File dir = new File(path);
             dir.mkdirs();
             File file = new File(path, "/People.txt");
-            for(People temp : people) {
+            for (People temp : people) {
                 String[] data = {id, temp.getId() + " "};
                 save(file, data);
             }
@@ -565,15 +576,15 @@ public class EditEvent extends Activity{
 //    }
 
     private void saveToPublic() {
-        if(people.isEmpty() == false) {
+        if (people.isEmpty() == false) {
             String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/cowra";
             File dir = new File(path);
             dir.mkdirs();
             File file = new File(path, "/Public.txt");
-            for(People temp : people) {
+            for (People temp : people) {
                 String[] data = {temp.getId(),
                         temp.getDescription()
-                                .replaceAll("\n", "<br>").replaceAll("\r", ">").replaceAll("'","")
+                                .replaceAll("\n", "<br>").replaceAll("\r", ">").replaceAll("'", "")
                                 + " "};
                 save(file, data);
             }
@@ -585,7 +596,7 @@ public class EditEvent extends Activity{
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/Vehicle.txt");
-        if(vehicles.isEmpty() == false) {
+        if (vehicles.isEmpty() == false) {
             for (Vehicle temp : vehicles) {
                 String[] data = {temp.getId(), temp.getlPlate(), temp.getColor(), temp.getMake(),
                         temp.getModel(), temp.getYear(), temp.getCarClass() + " "};
@@ -599,7 +610,7 @@ public class EditEvent extends Activity{
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/VehicleComp.txt");
-        for(Vehicle temp : vehicles) {
+        for (Vehicle temp : vehicles) {
             String[] data = {id, temp.getId() + " "};
             save(file, data);
         }
@@ -609,9 +620,9 @@ public class EditEvent extends Activity{
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(file, true);
-            for(int i = 0; i < data.length; i++) {
+            for (int i = 0; i < data.length; i++) {
                 fos.write(data[i].getBytes());
-                if(i+1 < data.length) {
+                if (i + 1 < data.length) {
                     fos.write(", ".getBytes());
                 }
                 fos.write("\n".getBytes());
@@ -630,34 +641,30 @@ public class EditEvent extends Activity{
     public static String[] load(File file) {
         FileInputStream fis = null;
         String[] array;
-        try
-        {
+        try {
             fis = new FileInputStream(file);
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader br = new BufferedReader(isr);
             String test;
-            int anzahl=0;
-            while ((test=br.readLine()) != null)
-            {
+            int anzahl = 0;
+            while ((test = br.readLine()) != null) {
                 anzahl++;
             }
             fis.getChannel().position(0);
             array = new String[anzahl];
             String line;
             int i = 0;
-            while((line=br.readLine())!=null)
-            {
+            while ((line = br.readLine()) != null) {
                 array[i] = line;
                 i++;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             array = new String[0];
         }
         return array;
     }
 
-    private void closeEvent() {
+    public void closeEvent() {
         onBackPressed();
     }
 }
