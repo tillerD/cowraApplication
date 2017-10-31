@@ -7,13 +7,13 @@
     tools:context="com.weltec.dylan.cowraapplication.SignIn">
 
     <android.support.constraint.Guideline
+        android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/guideline"
-        app:layout_constraintGuide_begin="20dp"
         android:orientation="horizontal"
-        tools:layout_editor_absoluteY="20dp"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintGuide_begin="20dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="20dp" />
 
     <TextView
         android:id="@+id/latField"
@@ -71,13 +71,13 @@
         android:id="@+id/PoliceJobLabel"
         android:layout_width="198dp"
         android:layout_height="46dp"
-        android:textSize="32dp"
         android:text="Police Job #"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.041"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.041"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.7" />
 
     <TextView
@@ -97,31 +97,31 @@
         android:id="@+id/location"
         android:layout_width="141dp"
         android:layout_height="41dp"
-        android:textSize="32dp"
-        android:text="Location"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="101dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="16dp"
-        app:layout_constraintVertical_bias="0.021"
-        android:layout_marginRight="16dp"
-        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.028"
+        android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        android:layout_marginTop="101dp"
+        android:text="Location"
+        android:textSize="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.028"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.021" />
 
     <TextView
         android:id="@+id/time"
         android:layout_width="141dp"
         android:layout_height="40dp"
-        android:textSize="32dp"
         android:text="Time"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.041"
+        android:textSize="32dp"
         app:layout_constraintBottom_toTopOf="@+id/Spotter"
+        app:layout_constraintHorizontal_bias="0.041"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/location"
         app:layout_constraintVertical_bias="0.721" />
 
@@ -131,11 +131,11 @@
         android:layout_height="46dp"
         android:text="Spotter"
         android:textSize="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/policeJobNumTxtField"
         app:layout_constraintHorizontal_bias="0.041"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/policeJobNumTxtField"
         app:layout_constraintVertical_bias="0.764" />
 
     <Spinner
@@ -181,10 +181,10 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text=""
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.242"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.242"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.825" />
 
@@ -206,27 +206,29 @@
         android:id="@+id/publiBtn"
         android:layout_width="127dp"
         android:layout_height="48dp"
-        android:text="Public"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="16dp"
-        app:layout_constraintVertical_bias="0.966"
-        android:layout_marginRight="16dp"
-        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.026"
+        android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        android:layout_marginTop="16dp"
+        android:text="Public"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.026"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.966" />
 
     <Button
         android:id="@+id/VehicleBtn"
         android:layout_width="127dp"
         android:layout_height="48dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Vehicle"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -234,17 +236,17 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.966"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        app:layout_constraintVertical_bias="0.966" />
 
     <Button
         android:id="@+id/PropertyBtn"
         android:layout_width="127dp"
         android:layout_height="48dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Property"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -252,9 +254,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.966"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        app:layout_constraintVertical_bias="0.966" />
 
     <EditText
         android:id="@+id/description"
@@ -285,8 +285,10 @@
         android:layout_width="251dp"
         android:layout_height="54dp"
         android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Edit Event"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -294,34 +296,36 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/cancelBtn"
         android:layout_width="271dp"
         android:layout_height="52dp"
-        android:text="Cancel"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.96"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintVertical_bias="1.0"
-        android:layout_marginLeft="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintHorizontal_bias="0.96"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/locationBtn"
-        android:layout_width="127"
-        android:layout_height="48"
+        android:layout_width="127dp"
+        android:layout_height="48dp"
         android:text="Location"
-        tools:layout_editor_absoluteX="521dp"
-        tools:layout_editor_absoluteY="579dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/eventBtn"
+        app:layout_constraintHorizontal_bias="0.676"
+        app:layout_constraintStart_toEndOf="@+id/PropertyBtn"
+        app:layout_constraintTop_toBottomOf="@+id/lonField"
+        app:layout_constraintVertical_bias="0.911" />
 
 </android.support.constraint.ConstraintLayout>

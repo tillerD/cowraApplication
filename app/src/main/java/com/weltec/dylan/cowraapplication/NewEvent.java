@@ -139,7 +139,7 @@ public class NewEvent extends Activity {
             }
         });
         Button locBtn = (Button) findViewById(R.id.locationBtn);
-        cancel.setOnClickListener(new View.OnClickListener() {
+        locBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 locationPopUp(v);
@@ -225,6 +225,7 @@ public class NewEvent extends Activity {
                     public void onClick(View v) {
                         String temp = text.getText().toString();
                         text.setText("Event Location: " + desc.getText().toString() + "\n" + temp);
+                        alertDialog.dismiss();
                     }
                 });
     }

@@ -136,7 +136,7 @@ public class EditEvent extends Activity {
             }
         });
         Button locBtn = (Button) findViewById(R.id.locationBtn);
-        cancel.setOnClickListener(new View.OnClickListener() {
+        locBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 locationPopUp(v);
