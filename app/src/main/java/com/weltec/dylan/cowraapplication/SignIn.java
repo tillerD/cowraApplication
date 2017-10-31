@@ -396,7 +396,7 @@ public class SignIn extends AppCompatActivity {
         Location loc = manage.getLastKnownLocation(LocationManager.NETWORK_PROVIDER.toString());
         ArrayList locList = calLoc(loc);
         String[] data = {id, locList.get(0).toString(), locList.get(1).toString(),
-                android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", time).toString() + " "};
+                android.text.format.DateFormat.format("yyyy-MM-dd kk:mm:ss", time).toString() + " "};
         save(file, data);
     }
 

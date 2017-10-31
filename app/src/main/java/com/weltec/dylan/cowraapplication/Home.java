@@ -375,7 +375,7 @@ public class Home extends Activity{
         Location loc = manage.getLastKnownLocation(LocationManager.NETWORK_PROVIDER.toString());
         ArrayList locList = calLoc(loc);
         String[] data = {id, locList.get(0).toString(), locList.get(1).toString(),
-                android.text.format.DateFormat.format("yyy-MM-dd hh:mm:ss", time).toString() + " "};
+                android.text.format.DateFormat.format("yyy-MM-dd kk:mm:ss", time).toString() + " "};
         save(file, data);
     }
 

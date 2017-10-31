@@ -69,7 +69,7 @@ public class NewEvent extends Activity {
         lat = (TextView) findViewById(R.id.latField);
         lon = (TextView) findViewById(R.id.lonField);
         time = (TextView) findViewById(R.id.timefield);
-        time.setText(getTime(currentTime));
+        time.setText(checkTime(currentTime));
         getLocation();
         lat.setText("Lat: " + Double.toString(latitude));
         lon.setText("Lon: " + Double.toString(longitude));
@@ -138,6 +138,13 @@ public class NewEvent extends Activity {
                 closeEvent();
             }
         });
+        Button locBtn = (Button) findViewById(R.id.locationBtn);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                locationPopUp(v);
+            }
+        });
     }
 
     private String createID(Date time) {
@@ -147,7 +154,7 @@ public class NewEvent extends Activity {
         return id;
     }
 
-    private String getTime(Date time) {
+    private String checkTime(Date time) {
         if(Integer.toString(time.getMinutes()).length() > 1) {
             return Integer.toString(time.getHours()) + ":"
                     + Integer.toString(time.getMinutes());
@@ -189,6 +196,37 @@ public class NewEvent extends Activity {
         Location loc = manage.getLastKnownLocation(LocationManager.NETWORK_PROVIDER.toString());
         longitude = loc.getLongitude();
         latitude = loc.getLatitude();
+    }
+
+    //Public popup window
+    private void locationPopUp(View v) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(NewEvent.this);
+        //Create edit fields for the pop up window
+        LinearLayout layout = new LinearLayout(NewEvent.this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        final EditText desc = new EditText(NewEvent.this);
+        desc.setHint("Mnt Vic Lookout");
+        desc.setHeight(250);
+        layout.addView(desc);
+        //Set the layout of the popup window
+        alert.setTitle("Event Location")
+                .setCancelable(false)
+                .setView(layout)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String temp = text.getText().toString();
+                        text.setText("Event Location: " + desc.getText().toString() + "\n" + temp);
+                    }
+                });
     }
 
     //Public popup window
@@ -533,9 +571,8 @@ public class NewEvent extends Activity {
         File dir = new File(path);
         dir.mkdirs();
         File file = new File(path, "/TimeLoc.txt");
-        String[] data = {id, lat.getText().toString().replaceAll("Lat: ",""),
-                lon.getText().toString().replaceAll("Lon: ",""),
-                android.text.format.DateFormat.format("yyy-MM-dd hh:mm:ss", time).toString() + " "};
+        String[] data = {id, String.valueOf(latitude), String.valueOf(longitude),
+                android.text.format.DateFormat.format("yyy-MM-dd kk:mm:ss", time).toString() + " "};
         save(file, data);
     }
 

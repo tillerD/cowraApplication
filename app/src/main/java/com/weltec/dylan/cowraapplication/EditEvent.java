@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -134,6 +135,13 @@ public class EditEvent extends Activity {
                 closeEvent();
             }
         });
+        Button locBtn = (Button) findViewById(R.id.locationBtn);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                locationPopUp(v);
+            }
+        });
     }
 
     private String getId(String ids) {
@@ -168,6 +176,37 @@ public class EditEvent extends Activity {
                 }
             }
         }
+    }
+
+    //Public popup window
+    private void locationPopUp(View v) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(EditEvent.this);
+        //Create edit fields for the pop up window
+        LinearLayout layout = new LinearLayout(EditEvent.this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        final EditText text = new EditText(EditEvent.this);
+        text.setHint("Mnt Vic Lookout");
+        text.setHeight(250);
+        layout.addView(text);
+        //Set the layout of the popup window
+        alert.setTitle("Event Location")
+                .setCancelable(false)
+                .setView(layout)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        final AlertDialog alertDialog = alert.create();
+        alertDialog.show();
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String temp = desc.getText().toString();
+                        desc.setText("Event Location: " + text.getText().toString() + "\n" + temp);
+                    }
+                });
     }
 
     //Public popup window
