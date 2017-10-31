@@ -205,6 +205,7 @@ public class EditEvent extends Activity {
                     public void onClick(View v) {
                         String temp = desc.getText().toString();
                         desc.setText("Event Location: " + text.getText().toString() + "\n" + temp);
+                        alertDialog.dismiss();
                     }
                 });
     }

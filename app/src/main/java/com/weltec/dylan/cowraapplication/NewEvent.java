@@ -73,6 +73,7 @@ public class NewEvent extends Activity {
         getLocation();
         lat.setText("Lat: " + Double.toString(latitude));
         lon.setText("Lon: " + Double.toString(longitude));
+        text = (EditText) findViewById(R.id.description);
         policeJobNum = (EditText) findViewById(R.id.policeJobNumTxtField);
         policeJobNum.setText("P0");
         councilJobNum = (EditText) findViewById(R.id.councilJobNumTxtField);
